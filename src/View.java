@@ -60,6 +60,7 @@ public class View extends Application {
         btnSubmit.setOnAction(event -> {
             System.out.println("Saada");
             System.out.println(Register.checkData(fieldFirstName.getText(), fieldLastName.getText()));
+            Database.connect();
         });
         btnBack.setOnAction(event -> {
             System.out.println("Tagasi");
