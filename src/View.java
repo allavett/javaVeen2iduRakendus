@@ -3,6 +3,8 @@
  */
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.scene.control.ChoiceBox;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
@@ -28,18 +30,13 @@ public class View extends Application {
         Button btnSubmit = new Button("Saada");
         Button btnBack = new Button("Tagasi");
 // Fields
-        TextField fieldFirstName = new TextField("Eesnimi");
-        TextField fieldLastName = new TextField("Perekonnanimi");
+        TextField fieldFirstName = new TextField();
+        fieldFirstName.setPromptText("Kasutaja");
+        TextField fieldLastName = new TextField();
+        fieldLastName.setPromptText("Parool");
         System.out.println(TextField.getClassCssMetaData());
-
-        fieldFirstName.setOnMouseClicked (event -> {
-
-            //System.out.println(fieldFirstName.getSelectedText().length());
-            if (fieldFirstName.getText().equals("Eesnimi")) {
-                fieldFirstName.selectAll();
-                //System.out.println(fieldFirstName.getSelectedText().length());
-            }
-        });
+// ChoiceBoxes
+        ChoiceBox choiceCounty = new ChoiceBox();
 // Layouts
         VBox layoutMain = new VBox();
         VBox layoutRegister = new VBox();
@@ -60,7 +57,8 @@ public class View extends Application {
         btnSubmit.setOnAction(event -> {
             System.out.println("Saada");
             System.out.println(Register.checkData(fieldFirstName.getText(), fieldLastName.getText()));
-            Database.connect();
+            Database.databaseActions();
+
         });
         btnBack.setOnAction(event -> {
             System.out.println("Tagasi");
