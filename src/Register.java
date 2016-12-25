@@ -1,3 +1,5 @@
+import javafx.collections.ObservableList;
+
 /**
  * Created by AllarVendla on 11.12.2016.
  */
@@ -20,5 +22,9 @@ public class Register {
             errorText = "Probleem nimega: " + name;
         }
         return errorText;
+    }
+    public static ObservableList<String> getData(String selectItem){
+        Database db = new Database();
+        return db.selectDistinct(selectItem);
     }
 }

@@ -1,13 +1,19 @@
-import javax.xml.crypto.Data;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.FXCollections.*;
+
+import java.awt.*;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by AllarVendla on 21.12.2016.
  */
 public class Database {
+    Connection conn = null;
     // Connect with DB
-    private Connection connect() {
-        Connection conn = null;
+    private void connect() {
         String url = "jdbc:sqlite:data/waterCounter.db";
         try {
             conn = DriverManager.getConnection(url);
@@ -15,11 +21,10 @@ public class Database {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return conn;
     }
     // Disconnect DB
-    public void disconnect() {
-        try (Connection conn = this.connect()){
+    private void disconnect() {
+        try {
             if (conn != null) {
                 conn.close();
                 System.out.println("Connection closed!");
@@ -29,35 +34,35 @@ public class Database {
         }
     }
     // Query from DB
-    public void selectCounty(){
-        String sql = "SELECT DISTINCT county FROM addresses";
-        try (Connection conn = this.connect();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql)) {
+    public ObservableList<String> selectDistinct(String selectItem){
 
+        connect();
+        ObservableList<String> dataList = FXCollections.observableArrayList();
+        //dataList.add("Vali maakond");
+        //List<String> dataList = new ArrayList<String>();
+
+        String sql = "SELECT DISTINCT " + selectItem + " FROM addresses";
+        try (Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 System.out.println(rs.getString("county"));
-                selectCounty();
+                dataList.add(rs.getString("county"));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        disconnect();
+        return dataList;
     }
     // Insert into DB
     public void insert(String username, String password, Integer address_id) {
         String sql = "INSERT INTO users(username, password, address_id) VALUES (?, ?, ?)";
-        try (Connection conn = this.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             pstmt.setString(2, password);
             pstmt.setInt(3, address_id);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-    }
-
-    public static void databaseActions() {
-        Database db = new Database();
-        db.selectCounty();
     }
 }

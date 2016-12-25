@@ -4,12 +4,17 @@
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableArray;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ChoiceBox;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+
+import java.awt.*;
+import java.util.*;
 
 
 public class View extends Application {
@@ -36,12 +41,15 @@ public class View extends Application {
         fieldLastName.setPromptText("Parool");
         System.out.println(TextField.getClassCssMetaData());
 // ChoiceBoxes
-        ChoiceBox choiceCounty = new ChoiceBox();
+        //ObservableList<Choice> chooseCounty = new FXCollections.observableArrayList();
+        ChoiceBox selectCounty = new ChoiceBox<>(Register.getData("county"));
+
+
 // Layouts
         VBox layoutMain = new VBox();
         VBox layoutRegister = new VBox();
         layoutMain.getChildren().addAll(btnRegister,btnLogin,btnLogout,btnNewCounter,btnCounterHistory);
-        layoutRegister.getChildren().addAll(btnBack,fieldFirstName,fieldLastName,btnSubmit);
+        layoutRegister.getChildren().addAll(btnBack,selectCounty,fieldFirstName,fieldLastName,btnSubmit);
 // Scenes
         Scene sceneMain = new Scene(layoutMain, 600, 300);
         Scene sceneRegister = new Scene(layoutRegister, 600, 300);
@@ -53,11 +61,12 @@ public class View extends Application {
         btnRegister.setOnAction(event -> {
             System.out.println("Registreeri");
             primaryStage.setScene(sceneRegister);
+            //Register.getData("test");
         });
         btnSubmit.setOnAction(event -> {
             System.out.println("Saada");
             System.out.println(Register.checkData(fieldFirstName.getText(), fieldLastName.getText()));
-            Database.databaseActions();
+
 
         });
         btnBack.setOnAction(event -> {
