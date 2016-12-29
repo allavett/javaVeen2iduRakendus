@@ -1,17 +1,11 @@
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.FXCollections.*;
-
-import java.awt.*;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by AllarVendla on 21.12.2016.
  */
 public class Database {
-    Connection conn = null;
+    private Connection conn = null;
     // Connect with DB
     private void connect() {
         String url = "jdbc:sqlite:data/waterCounter.db";
@@ -34,19 +28,16 @@ public class Database {
         }
     }
     // Query from DB
-    public ObservableList<String> selectDistinct(String selectItem){
-
+    public ArrayList<String> selectDistinct(String selectItem, String conditions){
         connect();
-        ObservableList<String> dataList = FXCollections.observableArrayList();
-        //dataList.add("Vali maakond");
-        //List<String> dataList = new ArrayList<String>();
-
-        String sql = "SELECT DISTINCT " + selectItem + " FROM addresses";
+        ArrayList<String> dataList = new ArrayList<>();
+        String sql = "SELECT DISTINCT " + selectItem + " FROM addresses " + conditions;
+        System.out.println(sql);
         try (Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                System.out.println(rs.getString("county"));
-                dataList.add(rs.getString("county"));
+                System.out.println(rs.getString(selectItem));
+                dataList.add(rs.getString(selectItem));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());

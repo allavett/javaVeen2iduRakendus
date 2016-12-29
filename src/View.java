@@ -7,6 +7,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.SelectionModel;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
@@ -41,15 +42,19 @@ public class View extends Application {
         fieldLastName.setPromptText("Parool");
         System.out.println(TextField.getClassCssMetaData());
 // ChoiceBoxes
-        //ObservableList<Choice> chooseCounty = new FXCollections.observableArrayList();
-        ChoiceBox selectCounty = new ChoiceBox<>(Register.getData("county"));
-
-
+        ChoiceBox<String> selectCounty = new ChoiceBox<>(Register.getData("county"));
+        selectCounty.getSelectionModel().select(0);
+        ChoiceBox<String> selectCity = new ChoiceBox<>();
+        selectCity.setDisable(true);
+        ChoiceBox selectStreet = new ChoiceBox<>();
+        selectStreet.setDisable(true);
+        ChoiceBox selectApartment = new ChoiceBox<>();
+        selectApartment.setDisable(true);
 // Layouts
         VBox layoutMain = new VBox();
         VBox layoutRegister = new VBox();
         layoutMain.getChildren().addAll(btnRegister,btnLogin,btnLogout,btnNewCounter,btnCounterHistory);
-        layoutRegister.getChildren().addAll(btnBack,selectCounty,fieldFirstName,fieldLastName,btnSubmit);
+        layoutRegister.getChildren().addAll(btnBack,selectCounty,selectCity,selectStreet,selectApartment,fieldFirstName,fieldLastName,btnSubmit);
 // Scenes
         Scene sceneMain = new Scene(layoutMain, 600, 300);
         Scene sceneRegister = new Scene(layoutRegister, 600, 300);
@@ -61,17 +66,31 @@ public class View extends Application {
         btnRegister.setOnAction(event -> {
             System.out.println("Registreeri");
             primaryStage.setScene(sceneRegister);
-            //Register.getData("test");
         });
         btnSubmit.setOnAction(event -> {
             System.out.println("Saada");
             System.out.println(Register.checkData(fieldFirstName.getText(), fieldLastName.getText()));
-
-
         });
         btnBack.setOnAction(event -> {
             System.out.println("Tagasi");
             primaryStage.setScene(sceneMain);
+        });
+        selectCounty.setOnAction(event -> {
+            SelectionModel selection = selectCounty.getSelectionModel();
+            if (selection.getSelectedIndex() != 0) {
+                Register.setConditions("county = '" + selection.getSelectedItem() + "'");
+                selectCity.setItems(Register.getData("city"));
+                selectCity.setDisable(false);
+                selectCity.getSelectionModel().select(0);
+
+
+            } else {
+                Register.clearConditions();
+                selectCity.setDisable(true);
+                selectStreet.setDisable(true);
+                selectApartment.setDisable(true);
+            }
+            selectCity.setItems(Register.getData("city"));
         });
     }
 }
