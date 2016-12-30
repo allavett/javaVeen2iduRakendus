@@ -3,9 +3,6 @@
  */
 
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
-import javafx.collections.ObservableList;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.SelectionModel;
 import javafx.stage.Stage;
@@ -14,11 +11,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
-import java.awt.*;
-import java.util.*;
-
 
 public class View extends Application {
+
+    private ChoiceBox<String> selectCounty;
+    private ChoiceBox<String> selectCity;
 
     public static void main(String[] args) {
         launch(args);
@@ -42,14 +39,17 @@ public class View extends Application {
         fieldLastName.setPromptText("Parool");
         System.out.println(TextField.getClassCssMetaData());
 // ChoiceBoxes
-        ChoiceBox<String> selectCounty = new ChoiceBox<>(Register.getData("county"));
-        selectCounty.getSelectionModel().select(0);
-        ChoiceBox<String> selectCity = new ChoiceBox<>();
-        selectCity.setDisable(true);
-        ChoiceBox selectStreet = new ChoiceBox<>();
-        selectStreet.setDisable(true);
-        ChoiceBox selectApartment = new ChoiceBox<>();
-        selectApartment.setDisable(true);
+
+        initSelectCounty();
+        initSelectCity();
+
+
+        ChoiceBox selectStreet = new ChoiceBox<>(Register.getData(""));
+        resetToDefault(selectStreet);
+        setState(selectStreet,true);
+        ChoiceBox selectApartment = new ChoiceBox<>(Register.getData(""));
+        resetToDefault(selectApartment);
+        setState(selectApartment,true);
 // Layouts
         VBox layoutMain = new VBox();
         VBox layoutRegister = new VBox();
@@ -75,22 +75,59 @@ public class View extends Application {
             System.out.println("Tagasi");
             primaryStage.setScene(sceneMain);
         });
+
+        selectCity.setOnAction(event -> {
+            System.out.println("vajutus?");
+            SelectionModel selection = selectCity.getSelectionModel();
+            if (selection.getSelectedIndex() != 0) {
+                Register.setConditions("city = '" + selection.getSelectedItem() + "'");
+                selectStreet.setItems(Register.getData("street"));
+                setState(selectStreet,false);
+                resetToDefault(selectStreet);
+            } else {
+                Register.clearConditions();
+                resetToDefault(selectStreet);
+                resetToDefault(selectApartment);
+                setState(selectStreet, true);
+                setState(selectApartment, true);
+            }
+        });
+    }
+
+    private void initSelectCounty(){
+        selectCounty = new ChoiceBox<>(Register.getData("county"));
+        resetToDefault(selectCounty);
         selectCounty.setOnAction(event -> {
             SelectionModel selection = selectCounty.getSelectionModel();
             if (selection.getSelectedIndex() != 0) {
                 Register.setConditions("county = '" + selection.getSelectedItem() + "'");
                 selectCity.setItems(Register.getData("city"));
-                selectCity.setDisable(false);
-                selectCity.getSelectionModel().select(0);
-
-
+                setState(selectCity,false);
+                resetToDefault(selectCity);
             } else {
                 Register.clearConditions();
-                selectCity.setDisable(true);
-                selectStreet.setDisable(true);
-                selectApartment.setDisable(true);
+                resetToDefault(selectCity);
+                resetToDefault(selectStreet);
+                resetToDefault(selectApartment);
+                setState(selectCity, true);
+                setState(selectStreet,true);
+                setState(selectApartment, true);
             }
-            selectCity.setItems(Register.getData("city"));
         });
+
+    }
+
+    private void initSelectCity(){
+        selectCity = new ChoiceBox<>(Register.getData(""));
+        resetToDefault(selectCity);
+        setState(selectCity,true);
+    }
+
+    private void setState(ChoiceBox<String> selectCity, boolean state) {
+        selectCity.setDisable(state);
+    }
+
+    private void resetToDefault(ChoiceBox<String> selectCity) {
+        selectCity.getSelectionModel().select(0);
     }
 }

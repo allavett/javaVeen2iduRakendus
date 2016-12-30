@@ -26,8 +26,12 @@ public class Register {
         return errorText;
     }
     public static ObservableList<String> getData(String selectItem){
-        Database db = new Database();
-        ArrayList<String> dataList = new ArrayList<>(db.selectDistinct(selectItem, conditions));
+        System.out.println("contitions= " + conditions);
+        ArrayList<String> dataList = new ArrayList<>();
+        if (!selectItem.isEmpty()) {
+            Database db = new Database();
+            dataList = db.selectDistinct(selectItem, conditions);
+        }
         dataList.add(0, "Vali..");
         ObservableList<String> selectItems = FXCollections.observableList(dataList);
         return selectItems;
@@ -36,6 +40,8 @@ public class Register {
     public static void setConditions(String newCondition){
         if (conditions == "") {
             conditions = "WHERE " + newCondition;
+        } else if (conditions.contains(newCondition)) {
+            System.out.println("sama tingimus");
         } else {
             conditions = conditions + " AND " + newCondition;
         }
