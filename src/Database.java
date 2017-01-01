@@ -36,7 +36,6 @@ public class Database {
         try (Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                System.out.println(rs.getString(selectItem));
                 dataList.add(rs.getString(selectItem));
             }
         } catch (SQLException e) {

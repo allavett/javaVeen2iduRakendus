@@ -1,6 +1,8 @@
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by AllarVendla on 11.12.2016.
@@ -25,28 +27,14 @@ public class Register {
         }
         return errorText;
     }
-    public static ObservableList<String> getData(String selectItem){
-        System.out.println("contitions= " + conditions);
+    public static ObservableList<String> getData(String selectItem, String condition){
         ArrayList<String> dataList = new ArrayList<>();
         if (!selectItem.isEmpty()) {
             Database db = new Database();
-            dataList = db.selectDistinct(selectItem, conditions);
+            dataList = db.selectDistinct(selectItem, condition);
         }
         dataList.add(0, "Vali..");
         ObservableList<String> selectItems = FXCollections.observableList(dataList);
         return selectItems;
-    }
-    public static String conditions = "";
-    public static void setConditions(String newCondition){
-        if (conditions == "") {
-            conditions = "WHERE " + newCondition;
-        } else if (conditions.contains(newCondition)) {
-            System.out.println("sama tingimus");
-        } else {
-            conditions = conditions + " AND " + newCondition;
-        }
-    }
-    public static void clearConditions() {
-        conditions = "";
     }
 }
