@@ -14,6 +14,7 @@ import javafx.scene.control.TextField;
 
 public class View extends Application {
 
+    public static enum choiceBoxes {county, city, street, houseNr}
     private ChoiceBox<String> selectCounty;
     private ChoiceBox<String> selectCity;
     private ChoiceBox<String> selectStreet;
@@ -84,8 +85,12 @@ public class View extends Application {
         selectCounty = new ChoiceBox<>(Register.getData("county", ""));
 
         resetToDefault(selectCounty);
+
         selectCounty.setOnAction(event -> {
             SelectionModel selection = selectCounty.getSelectionModel();
+            changeChoiceBoxAttributes(choiceBoxes.county, selection);
+
+
             if (selection.getSelectedIndex() != 0) {
                 selectedCountySQL = " WHERE county = '" + selection.getSelectedItem() + "' ";
                 selectCity.setItems(Register.getData("city", selectedCountySQL));
@@ -103,6 +108,27 @@ public class View extends Application {
             }
         });
 
+    }
+
+
+    private void changeChoiceBoxAttributes(choiceBoxes a, SelectionModel selection){
+        System.out.println(a.toString());
+        switch(a){
+        case county:
+            selectedCountySQL = " WHERE county = '" + selection.getSelectedItem() + "' ";
+            selectCity.setItems(Register.getData("city", selectedCountySQL));
+            setState(selectCity,false);
+            resetToDefault(selectCity);
+            break;
+        case city:
+        case street:
+
+        default :
+            break;
+        }
+        switch (a){
+
+        }
     }
 
     private void initSelectCity(){
