@@ -14,16 +14,16 @@ import javafx.scene.control.TextField;
 
 public class View extends Application {
 
-    public static enum choiceBoxes {county, city, street, houseNr}
+    private static enum ChoiceBoxCases {init, county, city, street, houseNr}
     private ChoiceBox<String> selectCounty;
     private ChoiceBox<String> selectCity;
     private ChoiceBox<String> selectStreet;
     private ChoiceBox<String> selectHouseNr;
     private ChoiceBox<String> selectApartment;
     private String selectedCountySQL;
-    private String setSelectedCitySQL;
-    private String setSelectedStreetSQL;
-    private String setSelectedHouseNrSQL;
+    private String selectedCitySQL;
+    private String selectedStreetSQL;
+    private String selectedHouseNrSQL;
 
     public static void main(String[] args) {
         launch(args);
@@ -52,6 +52,7 @@ public class View extends Application {
         initSelectStreet();
         initSelectHouseNr();
         initSelectApartment();
+        resetChoiceBoxValueAndState(ChoiceBoxCases.init);
 // Layouts
         VBox layoutMain = new VBox();
         VBox layoutRegister = new VBox();
@@ -77,130 +78,103 @@ public class View extends Application {
             System.out.println("Tagasi");
             primaryStage.setScene(sceneMain);
         });
-
-
     }
-
+// Initialize ChoiceBoxes
     private void initSelectCounty(){
         selectCounty = new ChoiceBox<>(Register.getData("county", ""));
-
-        resetToDefault(selectCounty);
-
-        selectCounty.setOnAction(event -> {
-            SelectionModel selection = selectCounty.getSelectionModel();
-            changeChoiceBoxAttributes(choiceBoxes.county, selection);
-
-
-            if (selection.getSelectedIndex() != 0) {
-                selectedCountySQL = " WHERE county = '" + selection.getSelectedItem() + "' ";
-                selectCity.setItems(Register.getData("city", selectedCountySQL));
-                setState(selectCity,false);
-                resetToDefault(selectCity);
-            } else if (selection.getSelectedIndex() == 0) {
-                resetToDefault(selectCity);
-                resetToDefault(selectStreet);
-                resetToDefault(selectHouseNr);
-                resetToDefault(selectApartment);
-                setState(selectCity, true);
-                setState(selectStreet,true);
-                setState(selectHouseNr, true);
-                setState(selectApartment, true);
-            }
-        });
-
-    }
-
-
-    private void changeChoiceBoxAttributes(choiceBoxes a, SelectionModel selection){
-        System.out.println(a.toString());
-        switch(a){
-        case county:
-            selectedCountySQL = " WHERE county = '" + selection.getSelectedItem() + "' ";
-            selectCity.setItems(Register.getData("city", selectedCountySQL));
-            setState(selectCity,false);
-            resetToDefault(selectCity);
-            break;
-        case city:
-        case street:
-
-        default :
-            break;
-        }
-        switch (a){
-
-        }
+        setChoicesOnAction(selectCounty, ChoiceBoxCases.county);
     }
 
     private void initSelectCity(){
         selectCity = new ChoiceBox<>(Register.getData("", ""));
-        resetToDefault(selectCity);
         setState(selectCity,true);
-        selectCity.setOnAction(event -> {
-            System.out.println("vajutus?");
-            SelectionModel selection = selectCity.getSelectionModel();
-            if (selection.getSelectedIndex() != 0) {
-                setSelectedCitySQL = selectedCountySQL + " AND city = '" + selection.getSelectedItem() + "'";
-                selectStreet.setItems(Register.getData( "street", setSelectedCitySQL));
-                setState(selectStreet,false);
-                resetToDefault(selectStreet);
-            } else if (selection.getSelectedIndex() == 0){
-                resetToDefault(selectStreet);
-                resetToDefault(selectApartment);
-                setState(selectStreet, true);
-                setState(selectApartment, true);
-            }
-        });
+        setChoicesOnAction(selectCity,ChoiceBoxCases.city);
     }
     private void initSelectStreet(){
         selectStreet = new ChoiceBox<>(Register.getData("", ""));
-        resetToDefault(selectStreet);
         setState(selectStreet,true);
-        selectStreet.setOnAction(event -> {
-            System.out.println("vajutus?");
-            SelectionModel selection = selectStreet.getSelectionModel();
-            if (selection.getSelectedIndex() != 0) {
-                setSelectedStreetSQL = setSelectedCitySQL + " AND street = '" + selection.getSelectedItem() + "'";
-                selectHouseNr.setItems(Register.getData( "house_nr", setSelectedStreetSQL));
-                setState(selectHouseNr,false);
-                resetToDefault(selectHouseNr);
-            } else if (selection.getSelectedIndex() == 0){
-                setState(selectHouseNr,true);
-                resetToDefault(selectHouseNr);
-                resetToDefault(selectApartment);
-                setState(selectApartment, true);
-            }
-        });
-    }
+        setChoicesOnAction(selectStreet, ChoiceBoxCases.street);
+     }
     private void initSelectHouseNr(){
         selectHouseNr = new ChoiceBox<>(Register.getData("", ""));
-        resetToDefault(selectHouseNr);
         setState(selectHouseNr,true);
-        selectHouseNr.setOnAction(event -> {
-            System.out.println("vajutus?");
-            SelectionModel selection = selectHouseNr.getSelectionModel();
-            if (selection.getSelectedIndex() != 0) {
-                setSelectedHouseNrSQL = setSelectedStreetSQL + " AND house_nr = '" + selection.getSelectedItem() + "'";
-                selectApartment.setItems(Register.getData( "apartment", setSelectedHouseNrSQL));
-                setState(selectApartment,false);
-                resetToDefault(selectApartment);
-            } else if (selection.getSelectedIndex() == 0){
-                resetToDefault(selectApartment);
-                setState(selectApartment, true);
-            }
-        });
-
+        setChoicesOnAction(selectHouseNr, ChoiceBoxCases.houseNr);
     }
     private void initSelectApartment(){
         selectApartment = new ChoiceBox<>(Register.getData("", ""));
-        resetToDefault(selectApartment);
+        resetToDefaultValue(selectApartment);
         setState(selectApartment,true);
     }
-
-    private void setState(ChoiceBox<String> selectCity, boolean state) {
-        selectCity.setDisable(state);
+// Actions on ChoiceBox selection
+    private void setChoicesOnAction(ChoiceBox<String> choiceBox, ChoiceBoxCases choiceBoxCase) {
+        choiceBox.setOnAction(event -> {
+            if (choiceBox.isFocused()) {
+                SelectionModel selection = choiceBox.getSelectionModel();
+                resetChoiceBoxValueAndState(choiceBoxCase);
+                if (selection.getSelectedIndex() != 0){
+                    switch (choiceBoxCase){
+                        case county:
+                            selectedCountySQL = " WHERE county = '" + selection.getSelectedItem() + "' ";
+                            selectCity.setItems(Register.getData("city", selectedCountySQL));
+                            setState(selectCity,false);
+                            resetToDefaultValue(selectCity);
+                            break;
+                        case city:
+                            selectedCitySQL = selectedCountySQL + " AND city = '" + selection.getSelectedItem() + "'";
+                            selectStreet.setItems(Register.getData( "street", selectedCitySQL));
+                            setState(selectStreet,false);
+                            resetToDefaultValue(selectStreet);
+                            break;
+                        case street:
+                            selectedStreetSQL = selectedCitySQL + " AND street = '" + selection.getSelectedItem() + "'";
+                            selectHouseNr.setItems(Register.getData( "house_nr", selectedStreetSQL));
+                            setState(selectHouseNr,false);
+                            resetToDefaultValue(selectHouseNr);
+                            break;
+                        case houseNr:
+                            selectedHouseNrSQL = selectedStreetSQL + " AND house_nr = '" + selection.getSelectedItem() + "'";
+                            selectApartment.setItems(Register.getData( "apartment", selectedHouseNrSQL));
+                            setState(selectApartment,false);
+                            resetToDefaultValue(selectApartment);
+                            break;
+                        default:
+                            System.out.println("How did you get here?!");
+                    }
+                }
+            }
+        });
+    }
+// Reset ChoiceBoxes
+    private void resetChoiceBoxValueAndState(ChoiceBoxCases choiceBoxCase) {
+        switch (choiceBoxCase){
+            case init:
+                resetToDefaultValue(selectCounty);
+            case county:
+                resetToDefaultValue(selectCity);
+                setState(selectCity,true);
+            case city:
+                resetToDefaultValue(selectStreet);
+                setState(selectStreet, true);
+            case street:
+                resetToDefaultValue(selectHouseNr);
+                setState(selectHouseNr, true);
+            case houseNr:
+                resetToDefaultValue(selectApartment);
+                setState(selectApartment, true);
+                break;
+            default:
+                System.out.println("How did you get here?!");
+                break;
+        }
+        System.out.println(choiceBoxCase.toString());
     }
 
-    private void resetToDefault(ChoiceBox<String> selectCity) {
-        selectCity.getSelectionModel().select(0);
+    private void setState(ChoiceBox<String> choiceBox, boolean state) {
+        choiceBox.setDisable(state);
     }
+
+    private void resetToDefaultValue(ChoiceBox<String> choiceBox) {
+        choiceBox.getSelectionModel().select(0);
+    }
+
 }
