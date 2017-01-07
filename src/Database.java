@@ -59,13 +59,26 @@ public class Database {
         return dataList;
     }
     // Insert into DB
-    public void insertUser(String username, String password, Integer address_id) {
+    public void insertUser(String username, String password, int address_id) {
         connect();
         String sql = "INSERT INTO users(username, password, address_id) VALUES (?, ?, ?)";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             pstmt.setString(2, password);
             pstmt.setInt(3, address_id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        disconnect();
+    }
+    public void insertCounter(int counter, int userId, int addressId){
+        connect();
+        String sql = "INSERT INTO counters (counter, date, address_id, user_id) VALUES (?, datetime('now', 'localtime'), ?, ?)";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, counter);
+            pstmt.setInt(2, addressId);
+            pstmt.setInt(3, userId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());

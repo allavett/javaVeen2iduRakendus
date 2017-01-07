@@ -39,7 +39,7 @@ public class View extends Application {
         Button btnLogin = new Button("Logi sisse");
         Button btnLoginSubmit = new Button("Logi sisse");
         Button btnLogout = new Button("Logi välja");
-        Button btnNewCounter = new Button("Saada uus näit");
+        Button btnCounterNew = new Button("Saada uus näit");
         Button btnCounterHistory = new Button("Vaata ajalugu");
         Button btnRegisterSubmit = new Button("Registreeri");
         Button btnBack = new Button("Tagasi");
@@ -50,6 +50,8 @@ public class View extends Application {
         fieldPassword.setPromptText("Parool");
         PasswordField fieldPasswordConfirm = new PasswordField();
         fieldPasswordConfirm.setPromptText("Parool uuesti");
+        TextField fieldCounterNew = new TextField();
+        fieldCounterNew.setPromptText("Uus veenäit:");
 // Labels
         Label lblCounty = new Label("Maakond:");
         Label lblCity = new Label("Linn:");
@@ -61,6 +63,7 @@ public class View extends Application {
         Label lblPasswordConfirm = new Label("Parooli kinnitus:");
         Label lblError = new Label();
         Label lblUser = new Label();
+        Label lblCounterNew = new Label("Sisesta uus veenäit:");
 // ChoiceBoxes
         initSelectCounty();
         initSelectCity();
@@ -73,6 +76,7 @@ public class View extends Application {
         layoutMain.getChildren().addAll(btnRegister,btnLogin);
         VBox layoutRegister = new VBox();
         VBox layoutLogin = new VBox();
+        VBox layoutCounterNew = new VBox();
 
 // Scenes
         int sceneWidth = 640;
@@ -80,6 +84,7 @@ public class View extends Application {
         Scene sceneMain = new Scene(layoutMain, sceneWidth, sceneHeight);
         Scene sceneRegister = new Scene(layoutRegister, sceneWidth, sceneHeight);
         Scene sceneLogin = new Scene(layoutLogin, sceneWidth, sceneHeight);
+        Scene sceneCounterNew = new Scene(layoutCounterNew, sceneWidth, sceneHeight);
 
 // Stage actions
         primaryStage.setScene(sceneMain);
@@ -97,7 +102,7 @@ public class View extends Application {
             System.out.println("Saada");
             Register.checkData(fieldUsername.getText(), fieldPassword.getText(), fieldPasswordConfirm.getText(),
                     selectedAddressId);
-            if (Register.getErrors().isEmpty()){
+            if (Errors.getErrors().isEmpty()){
                 resetChoiceBoxValueAndState(ChoiceBoxCases.init);
                 fieldUsername.clear();
                 fieldPassword.clear();
@@ -106,16 +111,16 @@ public class View extends Application {
                 layoutMain.getChildren().addAll(btnRegister,btnLogin);
                 primaryStage.setScene(sceneMain);
             }
-            lblError.setText(Register.getErrors());
+            lblError.setText(Errors.getErrors());
         });
         btnLogin.setOnAction(event -> {
             if (primaryStage.getScene().equals(sceneLogin)){
                 loggedInUser = Login.checkUserData(fieldUsername.getText(), fieldPassword.getText());
-                lblError.setText(Login.getErrors());
+                lblError.setText(Errors.getErrors());
                 if (!loggedInUser.isEmpty()){
                     lblUser.setText("Tere, " + loggedInUser + " !");
                     layoutMain.getChildren().clear();
-                    layoutMain.getChildren().addAll(lblUser,btnLogout,btnNewCounter,btnCounterHistory);
+                    layoutMain.getChildren().addAll(lblUser,btnLogout,btnCounterNew,btnCounterHistory);
                     primaryStage.setScene(sceneMain);
                 }
             } else {
@@ -140,6 +145,18 @@ public class View extends Application {
             layoutMain.getChildren().addAll(btnRegister,btnLogin);
             System.out.println("Tagasi");
             primaryStage.setScene(sceneMain);
+        });
+        btnCounterNew.setOnAction(event -> {
+            lblError.setText("");
+            if (primaryStage.getScene().equals(sceneCounterNew)){
+                NewCounter.insertCounter(loggedInUser, Integer.parseInt(fieldCounterNew.getText()));
+                lblError.setText(Errors.getErrors());
+            } else {
+                layoutCounterNew.getChildren().clear();
+                layoutCounterNew.getChildren().addAll(lblUser, lblCounterNew, fieldCounterNew, btnCounterNew, lblError);
+                System.out.println("Saada uus näit!");
+                primaryStage.setScene(sceneCounterNew);
+            }
         });
     }
 // Initialize ChoiceBoxes

@@ -7,29 +7,18 @@ import java.util.ArrayList;
  */
 
 public class Register {
-    /*
-    public static void register() {
-        System.out.println("Register klassi konstruktor");
-    }*/
-// Errors on registration form
-    private static String errors;
-    private static void setErrors(String err){
-        errors = err;
-    }
-    public static String getErrors(){
-        return errors;
-    }
+
 // Check registration data
     public static void checkData(String username, String password, String passwordConfirm, Integer address_id){
-        errors = "";
+        Errors.setErrors("");
         if (address_id < 1){
-            setErrors("Kontrolli aadressi!");
+            Errors.setErrors("Kontrolli aadressi!");
         } else {
             checkName(username);
-            if (errors.isEmpty()) {
+            if (Errors.getErrors().isEmpty()) {
                 checkPassword(password, passwordConfirm);
             }
-            if (errors.isEmpty()) {
+            if (Errors.getErrors().isEmpty()) {
                 System.out.println("Andmed õiged!");
                 Database db = new Database();
                 db.insertUser(username, password, address_id);
@@ -41,7 +30,7 @@ public class Register {
     private static void checkName(String username){
         if(username.length() < 4 || username.equals(""))
         {
-            setErrors("Kasutajanimi liiga lühike!");
+            Errors.setErrors("Kasutajanimi liiga lühike!");
         } else {
             ArrayList<String> users = new ArrayList<>();
             Database db = new Database();
@@ -49,7 +38,7 @@ public class Register {
             for (String user : users){
                 System.out.println(user);
                 if (username.equals(user)){
-                    setErrors("Selline kasutaja juba olemas!");
+                    Errors.setErrors("Selline kasutaja juba olemas!");
                 }
             }
         }
@@ -57,9 +46,9 @@ public class Register {
 // Check inserted password
     private static void checkPassword(String password, String passwordConfirm){
         if(password.length() < 6){
-            setErrors("Parool liiga lühike!");
+            Errors.setErrors("Parool liiga lühike!");
         } else if(!password.equals(passwordConfirm)){
-            setErrors("Parool ei klapi!");
+            Errors.setErrors("Parool ei klapi!");
         }
     }
 // Fill ChoiceBoxes with items
