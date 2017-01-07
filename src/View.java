@@ -24,6 +24,7 @@ public class View extends Application {
     private String selectedHouseNrSQL;
     private String selectedApartmentSQL;
     private Integer selectedAddressId;
+    private String loggedInUser;
 
     public static void main(String[] args) {
         launch(args);
@@ -36,10 +37,11 @@ public class View extends Application {
 // Buttons
         Button btnRegister = new Button("Registreeri");
         Button btnLogin = new Button("Logi sisse");
+        Button btnLoginSubmit = new Button("Logi sisse");
         Button btnLogout = new Button("Logi välja");
         Button btnNewCounter = new Button("Saada uus näit");
         Button btnCounterHistory = new Button("Vaata ajalugu");
-        Button btnSubmit = new Button("Saada");
+        Button btnRegisterSubmit = new Button("Registreeri");
         Button btnBack = new Button("Tagasi");
 // Fields
         TextField fieldUsername = new TextField();
@@ -57,7 +59,8 @@ public class View extends Application {
         Label lblUsername = new Label("Kasutajanimi:");
         Label lblPassword = new Label("Parool:");
         Label lblPasswordConfirm = new Label("Parooli kinnitus:");
-        Label lblError = new Label("");
+        Label lblError = new Label();
+        Label lblUser = new Label();
 // ChoiceBoxes
         initSelectCounty();
         initSelectCity();
@@ -67,24 +70,30 @@ public class View extends Application {
         resetChoiceBoxValueAndState(ChoiceBoxCases.init);
 // Layouts
         VBox layoutMain = new VBox();
+        layoutMain.getChildren().addAll(btnRegister,btnLogin);
         VBox layoutRegister = new VBox();
-        layoutMain.getChildren().addAll(btnRegister,btnLogin,btnLogout,btnNewCounter,btnCounterHistory);
-        layoutRegister.getChildren().addAll(btnBack,lblCounty,selectCounty,lblCity,selectCity,lblStreet,selectStreet,
-                lblHouseNr,selectHouseNr,lblApartment,selectApartment,lblUsername,fieldUsername,lblPassword,
-                fieldPassword,lblPasswordConfirm,fieldPasswordConfirm,btnSubmit,lblError);
+        VBox layoutLogin = new VBox();
+
 // Scenes
-        Scene sceneMain = new Scene(layoutMain, 640, 480);
-        Scene sceneRegister = new Scene(layoutRegister, 640, 480);
+        int sceneWidth = 640;
+        int sceneHeight = 480;
+        Scene sceneMain = new Scene(layoutMain, sceneWidth, sceneHeight);
+        Scene sceneRegister = new Scene(layoutRegister, sceneWidth, sceneHeight);
+        Scene sceneLogin = new Scene(layoutLogin, sceneWidth, sceneHeight);
 
 // Stage actions
         primaryStage.setScene(sceneMain);
         primaryStage.show();
 
         btnRegister.setOnAction(event -> {
+            layoutRegister.getChildren().clear();
+            layoutRegister.getChildren().addAll(btnBack,lblCounty,selectCounty,lblCity,selectCity,lblStreet,selectStreet,
+                    lblHouseNr,selectHouseNr,lblApartment,selectApartment,lblUsername,fieldUsername,lblPassword,
+                    fieldPassword,lblPasswordConfirm,fieldPasswordConfirm,btnRegisterSubmit,lblError);
             System.out.println("Registreeri");
             primaryStage.setScene(sceneRegister);
         });
-        btnSubmit.setOnAction(event -> {
+        btnRegisterSubmit.setOnAction(event -> {
             System.out.println("Saada");
             Register.checkData(fieldUsername.getText(), fieldPassword.getText(), fieldPasswordConfirm.getText(),
                     selectedAddressId);
@@ -93,11 +102,32 @@ public class View extends Application {
                 fieldUsername.clear();
                 fieldPassword.clear();
                 fieldPasswordConfirm.clear();
+                layoutMain.getChildren().clear();
+                layoutMain.getChildren().addAll(btnRegister,btnLogin);
                 primaryStage.setScene(sceneMain);
             }
             lblError.setText(Register.getErrors());
         });
+        btnLogin.setOnAction(event -> {
+            if (primaryStage.getScene().equals(sceneLogin)){
+                loggedInUser = Login.checkUserData(fieldUsername.getText(), fieldPassword.getText());
+                lblError.setText(Login.getErrors());
+                if (!loggedInUser.isEmpty()){
+                    lblUser.setText("Tere, " + loggedInUser + " !");
+                    layoutMain.getChildren().clear();
+                    layoutMain.getChildren().addAll(lblUser,btnLogout,btnNewCounter,btnCounterHistory);
+                    primaryStage.setScene(sceneMain);
+                }
+            } else {
+                layoutLogin.getChildren().clear();
+                layoutLogin.getChildren().addAll(btnBack, lblUsername, fieldUsername, lblPassword, fieldPassword, btnLogin, lblError);
+                primaryStage.setScene(sceneLogin);
+            }
+        });
         btnBack.setOnAction(event -> {
+            lblError.setText("");
+            layoutMain.getChildren().clear();
+            layoutMain.getChildren().addAll(btnRegister,btnLogin);
             System.out.println("Tagasi");
             primaryStage.setScene(sceneMain);
         });

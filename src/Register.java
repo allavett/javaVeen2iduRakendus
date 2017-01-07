@@ -14,7 +14,7 @@ public class Register {
 // Errors on registration form
     private static String errors;
     private static void setErrors(String err){
-        errors = errors + err + "";
+        errors = err;
     }
     public static String getErrors(){
         return errors;
