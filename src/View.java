@@ -119,10 +119,20 @@ public class View extends Application {
                     primaryStage.setScene(sceneMain);
                 }
             } else {
+                fieldUsername.clear();
+                fieldPassword.clear();
                 layoutLogin.getChildren().clear();
                 layoutLogin.getChildren().addAll(btnBack, lblUsername, fieldUsername, lblPassword, fieldPassword, btnLogin, lblError);
                 primaryStage.setScene(sceneLogin);
             }
+        });
+        btnLogout.setOnAction(event -> {
+            loggedInUser = "";
+            lblUser.setText(loggedInUser);
+            layoutMain.getChildren().clear();
+            layoutMain.getChildren().addAll(btnRegister,btnLogin);
+            System.out.println("Logiti välja!");
+            primaryStage.setScene(sceneMain);
         });
         btnBack.setOnAction(event -> {
             lblError.setText("");
