@@ -4,7 +4,9 @@
 public class NewCounter {
     public static void insertCounter(String username, int newCounter){
         System.out.println("Uue counteri sisestamine");
-        if (newCounter > 0) {
+        if (newCounter <= 0) {
+            Errors.setErrors("Sisestage õige näit");
+        } else {
             String conditions = "counters WHERE user_id=" + getUserId(username) + " ORDER BY date DESC LIMIT 1";
             Database db = new Database();
             String previousCounter = db.select("counter", conditions);
@@ -13,18 +15,11 @@ public class NewCounter {
             //Integer previousCounter = Integer.parseInt();
             if (newCounter > Integer.parseInt(previousCounter)) {
                 db.insertCounter(newCounter, getUserId(username), getAddressId(username));
+                Errors.setErrors("");
             }else{
                 Errors.setErrors("Eelmine näit on suurem!");
             }
-        } else {
-            Errors.setErrors("Sisesta uus näit!");
         }
-        if (Errors.getErrors().isEmpty()){
-
-        } else {
-
-        }
-
     }
     private static int getUserId(String username){
         String conditions = "users WHERE username = '" + username + "'";

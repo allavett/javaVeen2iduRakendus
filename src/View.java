@@ -140,20 +140,35 @@ public class View extends Application {
             primaryStage.setScene(sceneMain);
         });
         btnBack.setOnAction(event -> {
-            lblError.setText("");
-            layoutMain.getChildren().clear();
-            layoutMain.getChildren().addAll(btnRegister,btnLogin);
-            System.out.println("Tagasi");
-            primaryStage.setScene(sceneMain);
+            System.out.println("TESTTTTT:" +lblUser.getText()+".");
+            if (lblUser.getText().equals("")){
+
+                lblError.setText("");
+                layoutMain.getChildren().clear();
+                layoutMain.getChildren().addAll(btnRegister,btnLogin);
+                System.out.println("Tagasi");
+                primaryStage.setScene(sceneMain);
+            }else{
+                System.out.println("Tagasi");
+                layoutMain.getChildren().clear();
+                layoutMain.getChildren().addAll(lblUser,btnLogout,btnCounterNew,btnCounterHistory);
+                primaryStage.setScene(sceneMain);
+            }
+
         });
         btnCounterNew.setOnAction(event -> {
             lblError.setText("");
             if (primaryStage.getScene().equals(sceneCounterNew)){
-                NewCounter.insertCounter(loggedInUser, Integer.parseInt(fieldCounterNew.getText()));
-                lblError.setText(Errors.getErrors());
+                if (!fieldCounterNew.getText().equals("")){
+                    NewCounter.insertCounter(loggedInUser, Integer.parseInt(fieldCounterNew.getText()));
+                    lblError.setText(Errors.getErrors());
+                } else {
+                    lblError.setText("Sisestage veenäit!");
+                }
+
             } else {
                 layoutCounterNew.getChildren().clear();
-                layoutCounterNew.getChildren().addAll(lblUser, lblCounterNew, fieldCounterNew, btnCounterNew, lblError);
+                layoutCounterNew.getChildren().addAll(lblUser,btnBack, lblCounterNew, fieldCounterNew, btnCounterNew, lblError);
                 System.out.println("Saada uus näit!");
                 primaryStage.setScene(sceneCounterNew);
             }
