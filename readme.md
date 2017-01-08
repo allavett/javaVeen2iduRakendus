@@ -43,9 +43,9 @@ Kasutaja saab vaadata tarbimisajalugu, kui on sisse logitud
 
 ### Lisa
 * Algoritm
-![alt text](https://github.com/allavett/javaVeen2iduRakendus/data/img/algoritm.png "Algoritm")
+![alt text](data/img/algoritm.png "Algoritm")
 * Andmebaas
-![alt text](https://github.com/allavett/javaVeen2iduRakendus/data/img/dbTables.png "Algoritm")
+![alt text](data/img/dbTables.png "Algoritm")
 
 ## Litsents
 Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
