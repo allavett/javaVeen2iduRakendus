@@ -8,34 +8,35 @@ Veenäidud ja tarbimiskohad salvestatakse andmebaasi.
 Kasutaja saab valida soovitud tegevuse
 * Registreerimise nupp
 * Login nupp - kui on sisse logitud, muutub logoutiks
-* Veenäidu teatamise nupp
-* Tarbimisajaloo vaatamise nupp
+* Veenäidu teatamise nupp (Sisselogituna)
+* Tarbimisajaloo vaatamise nupp (Sisselogituna)
 
 ### Registreerimise vaade 
-Kasutaja saab end registreerida, mis loob võimaluse tarbimisajaloo jälgimiseks
-* Aadresssi väli - (dropdown valik?)
+Kasutaja saab end registreerida, mis loob võimaluse veenäidu teatamiseks ja tarbimisajaloo jälgimiseks
+* Tagasi nupp
+* Maakonna väli - (dropdown valik)
+* Linna väli
+* Tänava väli
+* Maja väli
 * Korteri väli
-* Emaili väli <- emailile saadetakse parool
+* Kasutajanime väli
+* Parooli väli
 * Register nupp
 
 ### Login vaade
 Kasutaja saab sisse logida
+* Tagasi nupp
 * Kasutajanime väli
 * Parooli väli
 * Login nupp
 
 ### Veenäidu teatamise vaade
-Kasutaja saab veenäitu edastada
-1. Kasutaja on sisse logitud
-    * Veenäidu väli
-    * Saatmise nupp
-2. Kasutaja ei ole sisse logitud
-    * Aadressi väli
-    * Korteri väli
-    * Veenäidu väli
-    * Saatmise nupp
+Kasutaja saab veenäitu edastada, kui on sisse logitud
+* Tagasi nupp
+* Veenäidu väli
+* Saatmise nupp
 
 ### Tarbimisajaloo vaade
-Kasutaja saab vaadata tarbimisajalugu. Võimalik ainult sisselogimisel
+Kasutaja saab vaadata tarbimisajalugu, kui on sisse logitud
 * Perioodi alguse valik
 * Perioodi lõpu valik
