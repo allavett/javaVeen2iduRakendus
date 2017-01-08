@@ -1,5 +1,5 @@
 # Veenäidu teatamise rakendus
-___
+
 Rakenduse eesmärk on lihtsustada veenäidu teatamise protsessi. Rakendus võimaldab veenäidu teatamist ja tarbimisajaloo jälgimist.
 Veenäidud ja tarbimiskohad salvestatakse andmebaasi.
 
@@ -40,3 +40,12 @@ Kasutaja saab veenäitu edastada, kui on sisse logitud
 Kasutaja saab vaadata tarbimisajalugu, kui on sisse logitud
 * Perioodi alguse valik
 * Perioodi lõpu valik
+
+### Lisa
+* Algoritm
+![alt text](https://github.com/allavett/javaVeen2iduRakendus/data/img/algoritm.png "Algoritm")
+* Andmebaas
+![alt text](https://github.com/allavett/javaVeen2iduRakendus/data/img/dbTables.png "Algoritm")
+
+## Litsents
+Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
