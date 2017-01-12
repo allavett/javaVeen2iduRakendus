@@ -190,31 +190,20 @@ public class View extends Application {
     }
 // Initialize ChoiceBoxes
     private void  initTestChoiceBoxes(){
-        testChoiceBox = new ChoiceBoxCustom();
-        testChoiceBox2 = new ChoiceBoxCustom();
-        testChoiceBox3 = new ChoiceBoxCustom();
-        testChoiceBox.setName("county");
-        testChoiceBox2.setName("city");
-        testChoiceBox3.setName("street");
-        testChoiceBox.setNextName("city");
-        testChoiceBox2.setNextName("street");
-        testChoiceBox2.setPrevious(testChoiceBox);
-        testChoiceBox3.setPrevious(testChoiceBox2);
-        testChoiceBox.setSqlQuery("addresses");
-        //testChoiceBox.setNextName(testChoiceBox2);
-        //testChoiceBox.setOnMouseClicked(event -> {
+        testChoiceBox = new ChoiceBoxCustom("county","city", null, "addresses");
+        testChoiceBox2 = new ChoiceBoxCustom("city","street", testChoiceBox, "addresses");
+        testChoiceBox3 = new ChoiceBoxCustom("street",null, testChoiceBox2, "addresses");
+        testChoiceBox.setSqlQuery();
+        testChoiceBox2.setSqlQuery();
             System.out.println(testChoiceBox2.getPrevious().getName());
             System.out.println(testChoiceBox3.getPrevious().getName());
-        //});
+
         Database db = new Database();
         testChoiceBox.setSetItemsWithDefaultItemAdded(db.select(testChoiceBox.getName(), testChoiceBox.getSqlQuery()), "Vali..");
-        //testChoiceBox.setSqlQuery();
-        //System.out.println(testChoiceBox.getSqlQuery());
+        testChoiceBox2.setSetItemsWithDefaultItemAdded(db.select(testChoiceBox2.getName(), testChoiceBox2.getSqlQuery()), "Vali..");
+        testChoiceBox.resetSelection();
+        testChoiceBox2.resetSelection();
 
-        //System.out.println(testChoiceBox.getNextName().getName());
-
-//        System.out.println(testChoiceBox2.getPrevious().getName());
-        //System.out.println(testChoiceBox2.getSqlQuery());
     }
     private void initSelectCounty(){
         selectCounty = new ChoiceBox<>(Register.getData("county", "addresses"));

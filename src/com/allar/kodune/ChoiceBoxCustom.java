@@ -3,6 +3,8 @@ package com.allar.kodune;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.SelectionModel;
 
 import java.util.ArrayList;
 
@@ -10,57 +12,45 @@ import java.util.ArrayList;
  * Created by allar.vendla on 10.01.2017.
  */
 public class ChoiceBoxCustom extends ChoiceBox<String>{
-    private String name;
-    private ChoiceBoxCustom previous;
-    private String nextName;
+    private final String name;
+    private final String nextName;
+    private final ChoiceBoxCustom previous;
+    private final String sqlTable;
     private String sqlQuery;
+    private String sqlQueryCondition;
     private ObservableList<String> setItemsWithDefaultSet;
+    SelectionModel selection;
 
+    public ChoiceBoxCustom(final String name, final String nextName, final ChoiceBoxCustom previous, final String table){
+        this.name = name;
+        this.nextName = nextName;
+        this.previous = previous;
+        this.sqlTable = table;
+    }
 
     public String getName() {
         return name;
     }
-    public void setName(String name) {
-        this.name = name;
-    }
+
     public ChoiceBoxCustom getPrevious() {
         return previous;
-    }
-    public void setPrevious(ChoiceBoxCustom previous) {
-        this.previous = previous;
-    }
-    public String getNextName() {
-        return nextName;
-    }
-    public void setNextName(String nextName) {
-        this.nextName = nextName;
     }
 
     public String getSqlQuery() {
         return sqlQuery;
     }
 
-    public void setSqlQuery(String table) {
-        if (this.nextName == null){
-            if (this.previous == null){
-                this.sqlQuery = "SELECT " + this.name + " FROM " + table;
-            } else {
-                if (this.previous.sqlQuery.contains("WHERE")){
-                    this.sqlQuery = this.previous.sqlQuery + " AND " + this.name + "='" + this.getSelectionModel().getSelectedItem() +"'";
+    public void setSqlQuery() {
+
+        this.sqlQuery = "SELECT DISTINCT " + name + " FROM " + this.sqlTable;
+        if (selection != null) {
+            if (previous != null) {
+                if (previous.sqlQueryCondition == null) {
+                    sqlQueryCondition = " WHERE " + name + "='" + selection.getSelectedItem() + "'";
                 } else {
-                    this.sqlQuery = this.previous.sqlQuery + " WHERE " + this.name + "='" + this.getSelectionModel().getSelectedItem() +"'";
+                    sqlQueryCondition = previous.sqlQueryCondition + " AND " + name + "='" + selection.getSelectedItem() + "'";
                 }
-            }
-        }else{
-            if (this.previous == null){
-                this.sqlQuery = "SELECT " + this.nextName + " FROM " + table + " WHERE " + this.name + "='"
-                        + this.getSelectionModel().getSelectedItem() +"'";
-            } else {
-                if (this.previous.sqlQuery.contains("WHERE")){
-                    this.sqlQuery = this.previous.sqlQuery + " AND " + this.name + "='" + this.getSelectionModel().getSelectedItem() +"'";
-                } else {
-                    this.sqlQuery = this.previous.sqlQuery + " WHERE " + this.name + "='" + this.getSelectionModel().getSelectedItem() +"'";
-                }
+                sqlQuery = sqlQuery + sqlQueryCondition;
             }
         }
     }
@@ -68,6 +58,18 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
     public void setSetItemsWithDefaultItemAdded(ArrayList<String> items, String defaultItem) {
         items.add(0, defaultItem);
         this.setItems(FXCollections.observableArrayList(items));
+    }
+
+    public void resetSelection(){
+        this.selection = this.getSelectionModel();
+        this.setOnAction(event -> {
+
+            System.out.println(selection.getSelectedItem());
+            if (previous != null && previous.selection != null && previous.selection.getSelectedIndex() > 0){
+
+                previous.selection.select(0);
+            }
+        });
     }
 
     @Override
