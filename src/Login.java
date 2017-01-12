@@ -2,14 +2,15 @@
  * Created by AllarVendla on 07.01.2017.
  */
 public class Login {
+    public static Error error = new Error();
     public static String checkUserData(String username, String password){
-        Errors.setErrors("");
+        error.setError("");
         String conditions = "users WHERE username = '" + username + "' AND password = '" + password + "'";
         Database db = new Database();
-        String dbResponse = db.select("username", conditions);
+        String dbResponse = db.selectOLD("username", conditions);
         if (dbResponse.isEmpty()){
-            Errors.setErrors("Kasutajanimi ja/või parool on vale!");
-        } else if (dbResponse.equals(username)){
+            error.setError("Kasutajanimi ja/või parool on vale!");
+        } else if (dbResponse.equals(username) && !dbResponse.isEmpty()){
             System.out.println("Kasutaja sisse logitud!");
             return dbResponse;
         }

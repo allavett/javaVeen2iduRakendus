@@ -27,13 +27,28 @@ public class Database {
             System.out.println(e.getMessage());
         }
     }
-    public String select(String selectItem, String conditions){
+    public String selectOLD(String selectItem, String conditions){
         connect();
         String result = new String();
         String sql = "SELECT " + selectItem + " FROM " + conditions;
         try (Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql)) {
             result = rs.getString(selectItem);
+            System.out.println(result);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        disconnect();
+        return result;
+    }
+    public ArrayList<String> select(String item, String query){
+        connect();
+        ArrayList<String> result = new ArrayList<>();
+        try (Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()){
+                result.add(rs.getString(item));
+            }
             System.out.println(result);
         } catch (SQLException e) {
             System.out.println(e.getMessage());

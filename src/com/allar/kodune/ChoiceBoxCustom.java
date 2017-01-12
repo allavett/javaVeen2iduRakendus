@@ -1,7 +1,10 @@
 package com.allar.kodune;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ChoiceBox;
+
+import java.util.ArrayList;
 
 /**
  * Created by allar.vendla on 10.01.2017.
@@ -11,8 +14,7 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
     private ChoiceBoxCustom previous;
     private String nextName;
     private String sqlQuery;
-    private String sqlTable;
-    private ObservableList<String> selectionItems;
+    private ObservableList<String> setItemsWithDefaultSet;
 
 
     public String getName() {
@@ -34,25 +36,14 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
         this.nextName = nextName;
     }
 
-
-    private String getSqlTable(){
-        if (this.sqlTable.isEmpty() && !this.previous.name.isEmpty()){
-            this.setSqlTable(this.previous.getSqlTable());
-        }
-        return this.sqlTable;
-    }
-    public void setSqlTable(String sqlTable) {
-        this.sqlTable = sqlTable;
-    }
-
     public String getSqlQuery() {
         return sqlQuery;
     }
 
-    public void setSqlQuery() {
+    public void setSqlQuery(String table) {
         if (this.nextName == null){
-            if (this.previous.getName() == null){
-                this.sqlQuery = "SELECT " + this.name + " FROM " + this.sqlTable;
+            if (this.previous == null){
+                this.sqlQuery = "SELECT " + this.name + " FROM " + table;
             } else {
                 if (this.previous.sqlQuery.contains("WHERE")){
                     this.sqlQuery = this.previous.sqlQuery + " AND " + this.name + "='" + this.getSelectionModel().getSelectedItem() +"'";
@@ -61,8 +52,8 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
                 }
             }
         }else{
-            if (this.previous.getName() == null){
-                this.sqlQuery = "SELECT " + this.nextName + " FROM " + this.sqlTable + " WHERE " + this.name + "='"
+            if (this.previous == null){
+                this.sqlQuery = "SELECT " + this.nextName + " FROM " + table + " WHERE " + this.name + "='"
                         + this.getSelectionModel().getSelectedItem() +"'";
             } else {
                 if (this.previous.sqlQuery.contains("WHERE")){
@@ -74,13 +65,9 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
         }
     }
 
-    private ObservableList<String> getSelectionItems() {
-        return selectionItems;
-    }
-
-    private void setSelectionItems(ObservableList<String> selectionItems) {
-
-        this.selectionItems = selectionItems;
+    public void setSetItemsWithDefaultItemAdded(ArrayList<String> items, String defaultItem) {
+        items.add(0, defaultItem);
+        this.setItems(FXCollections.observableArrayList(items));
     }
 
     @Override
@@ -91,19 +78,15 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
         ChoiceBoxCustom that = (ChoiceBoxCustom) o;
 
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (previous != null ? !previous.equals(that.previous) : that.previous != null) return false;
         if (nextName != null ? !nextName.equals(that.nextName) : that.nextName != null) return false;
-        if (sqlQuery != null ? !sqlQuery.equals(that.sqlQuery) : that.sqlQuery != null) return false;
-        return sqlTable != null ? sqlTable.equals(that.sqlTable) : that.sqlTable == null;
+        return sqlQuery != null ? sqlQuery.equals(that.sqlQuery) : that.sqlQuery == null;
     }
 
     @Override
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (previous != null ? previous.hashCode() : 0);
         result = 31 * result + (nextName != null ? nextName.hashCode() : 0);
         result = 31 * result + (sqlQuery != null ? sqlQuery.hashCode() : 0);
-        result = 31 * result + (sqlTable != null ? sqlTable.hashCode() : 0);
         return result;
     }
 
@@ -115,7 +98,6 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
                 ", previous=" + previous +
                 ", nextName=" + nextName +
                 ", sqlQuery='" + sqlQuery + '\'' +
-                ", sqlTable='" + sqlTable + '\'' +
                 '}';
     }
 }

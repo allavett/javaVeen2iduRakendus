@@ -9,16 +9,18 @@ import java.util.ArrayList;
 public class Register {
 
 // Check registration data
+    public static Error error = new Error();
     public static void checkData(String username, String password, String passwordConfirm, Integer address_id){
-        Errors.setErrors("");
+        error.setError("");
         if (address_id < 1){
-            Errors.setErrors("Kontrolli aadressi!");
+            error.setError("Kontrolli aadressi!");
         } else {
+
             checkName(username);
-            if (Errors.getErrors().isEmpty()) {
+            if (error.getError().isEmpty()) {
                 checkPassword(password, passwordConfirm);
             }
-            if (Errors.getErrors().isEmpty()) {
+            if (error.getError().isEmpty()) {
                 System.out.println("Andmed õiged!");
                 Database db = new Database();
                 db.insertUser(username, password, address_id);
@@ -30,7 +32,7 @@ public class Register {
     private static void checkName(String username){
         if(username.length() < 4 || username.equals(""))
         {
-            Errors.setErrors("Kasutajanimi liiga lühike!");
+            error.setError("Kasutajanimi liiga lühike!");
         } else {
             ArrayList<String> users = new ArrayList<>();
             Database db = new Database();
@@ -38,7 +40,7 @@ public class Register {
             for (String user : users){
                 System.out.println(user);
                 if (username.equals(user)){
-                    Errors.setErrors("Selline kasutaja juba olemas!");
+                    error.setError("Selline kasutaja juba olemas!");
                 }
             }
         }
@@ -46,9 +48,9 @@ public class Register {
 // Check inserted password
     private static void checkPassword(String password, String passwordConfirm){
         if(password.length() < 6){
-            Errors.setErrors("Parool liiga lühike!");
+            error.setError("Parool liiga lühike!");
         } else if(!password.equals(passwordConfirm)){
-            Errors.setErrors("Parool ei klapi!");
+            error.setError("Parool ei klapi!");
         }
     }
 // Fill ChoiceBoxes with items
@@ -67,7 +69,7 @@ public class Register {
         String id = new String();
         if (!selectItem.isEmpty() && !condition.isEmpty()) {
             Database db = new Database();
-            id = db.select(selectItem, condition);
+            id = db.selectOLD(selectItem, condition);
         }
         System.out.println("Register row id" + id);
         return Integer.parseInt(id);

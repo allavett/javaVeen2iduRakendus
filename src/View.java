@@ -2,12 +2,15 @@
  * Created by AllarVendla on 20.11.2016.
  */
 
+import com.allar.kodune.ChoiceBoxCustom;
+import com.sun.org.apache.regexp.internal.RE;
 import javafx.application.Application;
-import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
+
+import javax.xml.crypto.Data;
 
 
 public class View extends Application {
@@ -18,6 +21,7 @@ public class View extends Application {
     private ChoiceBox<String> selectStreet;
     private ChoiceBox<String> selectHouseNr;
     private ChoiceBox<String> selectApartment;
+
     private String selectedCountySQL;
     private String selectedCitySQL;
     private String selectedStreetSQL;
@@ -25,19 +29,19 @@ public class View extends Application {
     private String selectedApartmentSQL;
     private Integer selectedAddressId;
     private String loggedInUser;
-
+    private ChoiceBoxCustom testChoiceBox;
+    private ChoiceBoxCustom testChoiceBox2;
+    private ChoiceBoxCustom testChoiceBox3;
     public static void main(String[] args) {
         launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) {
-
         primaryStage.setTitle("Veenäidu teatamise rakendus");
 // Buttons
         Button btnRegister = new Button("Registreeri");
         Button btnLogin = new Button("Logi sisse");
-        Button btnLoginSubmit = new Button("Logi sisse");
         Button btnLogout = new Button("Logi välja");
         Button btnCounterNew = new Button("Saada uus näit");
         Button btnCounterHistory = new Button("Vaata ajalugu");
@@ -65,6 +69,8 @@ public class View extends Application {
         Label lblUser = new Label();
         Label lblCounterNew = new Label("Sisesta uus veenäit:");
 // ChoiceBoxes
+        initTestChoiceBoxes();
+
         initSelectCounty();
         initSelectCity();
         initSelectStreet();
@@ -73,14 +79,14 @@ public class View extends Application {
         resetChoiceBoxValueAndState(ChoiceBoxCases.init);
 // Layouts
         VBox layoutMain = new VBox();
-        layoutMain.getChildren().addAll(btnRegister,btnLogin);
+        layoutMain.getChildren().addAll(testChoiceBox, testChoiceBox2,btnRegister,btnLogin);
         VBox layoutRegister = new VBox();
         VBox layoutLogin = new VBox();
         VBox layoutCounterNew = new VBox();
 
 // Scenes
         int sceneWidth = 640;
-        int sceneHeight = 480;
+        int sceneHeight = 500;
         Scene sceneMain = new Scene(layoutMain, sceneWidth, sceneHeight);
         Scene sceneRegister = new Scene(layoutRegister, sceneWidth, sceneHeight);
         Scene sceneLogin = new Scene(layoutLogin, sceneWidth, sceneHeight);
@@ -91,6 +97,9 @@ public class View extends Application {
         primaryStage.show();
 
         btnRegister.setOnAction(event -> {
+            fieldUsername.clear();
+            fieldPassword.clear();
+            fieldPasswordConfirm.clear();
             layoutRegister.getChildren().clear();
             layoutRegister.getChildren().addAll(btnBack,lblCounty,selectCounty,lblCity,selectCity,lblStreet,selectStreet,
                     lblHouseNr,selectHouseNr,lblApartment,selectApartment,lblUsername,fieldUsername,lblPassword,
@@ -102,7 +111,8 @@ public class View extends Application {
             System.out.println("Saada");
             Register.checkData(fieldUsername.getText(), fieldPassword.getText(), fieldPasswordConfirm.getText(),
                     selectedAddressId);
-            if (Errors.getErrors().isEmpty()){
+            String error = Register.error.getError();
+            if (error.isEmpty()){
                 resetChoiceBoxValueAndState(ChoiceBoxCases.init);
                 fieldUsername.clear();
                 fieldPassword.clear();
@@ -111,18 +121,21 @@ public class View extends Application {
                 layoutMain.getChildren().addAll(btnRegister,btnLogin);
                 primaryStage.setScene(sceneMain);
             }
-            lblError.setText(Errors.getErrors());
+            lblError.setText(error);
+
         });
         btnLogin.setOnAction(event -> {
             if (primaryStage.getScene().equals(sceneLogin)){
                 loggedInUser = Login.checkUserData(fieldUsername.getText(), fieldPassword.getText());
-                lblError.setText(Errors.getErrors());
-                if (!loggedInUser.isEmpty()){
+                String error = Login.error.getError();
+                if (error.isEmpty()){
                     lblUser.setText("Tere, " + loggedInUser + " !");
                     layoutMain.getChildren().clear();
                     layoutMain.getChildren().addAll(lblUser,btnLogout,btnCounterNew,btnCounterHistory);
                     primaryStage.setScene(sceneMain);
                 }
+                lblError.setText(error);
+
             } else {
                 fieldUsername.clear();
                 fieldPassword.clear();
@@ -159,9 +172,10 @@ public class View extends Application {
         btnCounterNew.setOnAction(event -> {
             lblError.setText("");
             if (primaryStage.getScene().equals(sceneCounterNew)){
+                String error = NewCounter.error.getError();
                 if (!fieldCounterNew.getText().equals("")){
                     NewCounter.insertCounter(loggedInUser, Integer.parseInt(fieldCounterNew.getText()));
-                    lblError.setText(Errors.getErrors());
+                    lblError.setText(error);
                 } else {
                     lblError.setText("Sisestage veenäit!");
                 }
@@ -175,6 +189,33 @@ public class View extends Application {
         });
     }
 // Initialize ChoiceBoxes
+    private void  initTestChoiceBoxes(){
+        testChoiceBox = new ChoiceBoxCustom();
+        testChoiceBox2 = new ChoiceBoxCustom();
+        testChoiceBox3 = new ChoiceBoxCustom();
+        testChoiceBox.setName("county");
+        testChoiceBox2.setName("city");
+        testChoiceBox3.setName("street");
+        testChoiceBox.setNextName("city");
+        testChoiceBox2.setNextName("street");
+        testChoiceBox2.setPrevious(testChoiceBox);
+        testChoiceBox3.setPrevious(testChoiceBox2);
+        testChoiceBox.setSqlQuery("addresses");
+        //testChoiceBox.setNextName(testChoiceBox2);
+        //testChoiceBox.setOnMouseClicked(event -> {
+            System.out.println(testChoiceBox2.getPrevious().getName());
+            System.out.println(testChoiceBox3.getPrevious().getName());
+        //});
+        Database db = new Database();
+        testChoiceBox.setSetItemsWithDefaultItemAdded(db.select(testChoiceBox.getName(), testChoiceBox.getSqlQuery()), "Vali..");
+        //testChoiceBox.setSqlQuery();
+        //System.out.println(testChoiceBox.getSqlQuery());
+
+        //System.out.println(testChoiceBox.getNextName().getName());
+
+//        System.out.println(testChoiceBox2.getPrevious().getName());
+        //System.out.println(testChoiceBox2.getSqlQuery());
+    }
     private void initSelectCounty(){
         selectCounty = new ChoiceBox<>(Register.getData("county", "addresses"));
         setChoicesOnAction(selectCounty, ChoiceBoxCases.county);
