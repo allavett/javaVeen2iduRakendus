@@ -3,14 +3,12 @@
  */
 
 import com.allar.kodune.ChoiceBoxCustom;
-import com.sun.org.apache.regexp.internal.RE;
+import com.allar.kodune.Database;
 import javafx.application.Application;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
-
-import javax.xml.crypto.Data;
 
 
 public class View extends Application {
@@ -79,7 +77,7 @@ public class View extends Application {
         resetChoiceBoxValueAndState(ChoiceBoxCases.init);
 // Layouts
         VBox layoutMain = new VBox();
-        layoutMain.getChildren().addAll(testChoiceBox, testChoiceBox2,btnRegister,btnLogin);
+        layoutMain.getChildren().addAll(testChoiceBox, testChoiceBox2, testChoiceBox3,btnRegister,btnLogin);
         VBox layoutRegister = new VBox();
         VBox layoutLogin = new VBox();
         VBox layoutCounterNew = new VBox();
@@ -190,19 +188,21 @@ public class View extends Application {
     }
 // Initialize ChoiceBoxes
     private void  initTestChoiceBoxes(){
-        testChoiceBox = new ChoiceBoxCustom("county","city", null, "addresses");
-        testChoiceBox2 = new ChoiceBoxCustom("city","street", testChoiceBox, "addresses");
-        testChoiceBox3 = new ChoiceBoxCustom("street",null, testChoiceBox2, "addresses");
-        testChoiceBox.setSqlQuery();
-        testChoiceBox2.setSqlQuery();
-            System.out.println(testChoiceBox2.getPrevious().getName());
-            System.out.println(testChoiceBox3.getPrevious().getName());
 
-        Database db = new Database();
-        testChoiceBox.setSetItemsWithDefaultItemAdded(db.select(testChoiceBox.getName(), testChoiceBox.getSqlQuery()), "Vali..");
-        testChoiceBox2.setSetItemsWithDefaultItemAdded(db.select(testChoiceBox2.getName(), testChoiceBox2.getSqlQuery()), "Vali..");
+        testChoiceBox3 = new ChoiceBoxCustom("street",null, "addresses");
+        testChoiceBox2 = new ChoiceBoxCustom("city", testChoiceBox3, "addresses");
+        testChoiceBox = new ChoiceBoxCustom("county", testChoiceBox2, "addresses");
+        //testChoiceBox.setSqlQuery();
+        //testChoiceBox2.setSqlQuery();
+
+        //Database db = new Database();
+        //testChoiceBox.setSetItemsWithDefaultItemAdded(db.select(testChoiceBox.getName(), testChoiceBox.getSqlQuery()), "Vali..");
+        //testChoiceBox2.setSetItemsWithDefaultItemAdded(db.select(testChoiceBox2.getName(), testChoiceBox2.getSqlQuery()), "Vali..");
         testChoiceBox.resetSelection();
-        testChoiceBox2.resetSelection();
+        //testChoiceBox2.setSetItemsWithDefaultItemAdded(db.select(testChoiceBox2.getName(), testChoiceBox2.getSqlQuery()), "Vali..");
+        //testChoiceBox2.resetSelection();
+
+
 
     }
     private void initSelectCounty(){

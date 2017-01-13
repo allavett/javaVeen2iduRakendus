@@ -3,7 +3,6 @@ package com.allar.kodune;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SelectionModel;
 
 import java.util.ArrayList;
@@ -13,18 +12,17 @@ import java.util.ArrayList;
  */
 public class ChoiceBoxCustom extends ChoiceBox<String>{
     private final String name;
-    private final String nextName;
-    private final ChoiceBoxCustom previous;
+    private final ChoiceBoxCustom next;
     private final String sqlTable;
+    private String previousSQLCondition;
     private String sqlQuery;
     private String sqlQueryCondition;
     private ObservableList<String> setItemsWithDefaultSet;
     SelectionModel selection;
 
-    public ChoiceBoxCustom(final String name, final String nextName, final ChoiceBoxCustom previous, final String table){
+    public ChoiceBoxCustom(final String name, final ChoiceBoxCustom next, final String table){
         this.name = name;
-        this.nextName = nextName;
-        this.previous = previous;
+        this.next = next;
         this.sqlTable = table;
     }
 
@@ -32,8 +30,8 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
         return name;
     }
 
-    public ChoiceBoxCustom getPrevious() {
-        return previous;
+    public ChoiceBoxCustom getNext() {
+        return next;
     }
 
     public String getSqlQuery() {
@@ -41,37 +39,60 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
     }
 
     public void setSqlQuery() {
-
         this.sqlQuery = "SELECT DISTINCT " + name + " FROM " + this.sqlTable;
         if (selection != null) {
-            if (previous != null) {
-                if (previous.sqlQueryCondition == null) {
+            //if (next != null) {
+                if (previousSQLCondition == null) {
                     sqlQueryCondition = " WHERE " + name + "='" + selection.getSelectedItem() + "'";
                 } else {
-                    sqlQueryCondition = previous.sqlQueryCondition + " AND " + name + "='" + selection.getSelectedItem() + "'";
+                    this.sqlQuery = this.sqlQuery + previousSQLCondition;
+                    sqlQueryCondition = previousSQLCondition + " AND " + name + "='" + selection.getSelectedItem() + "'";
                 }
-                sqlQuery = sqlQuery + sqlQueryCondition;
-            }
+                //sqlQuery = sqlQuery + sqlQueryCondition;
+            //}
+        }
+        setCurrentSQLQueryConditionForNext(sqlQueryCondition);
+    }
+
+    private void setCurrentSQLQueryConditionForNext(String sqlQueryCondition){
+        if (next != null){
+            next.previousSQLCondition = sqlQueryCondition;
         }
     }
 
-    public void setSetItemsWithDefaultItemAdded(ArrayList<String> items, String defaultItem) {
-        items.add(0, defaultItem);
-        this.setItems(FXCollections.observableArrayList(items));
+    public void setSetItemsWithDefaultItemAdded(ChoiceBoxCustom choiceBoxCustom) {
+        Database db = new Database();
+        ArrayList<String> items = new ArrayList<>();
+        if (previousSQLCondition == null || choiceBoxCustom.getSelectionModel().getSelectedIndex() > 0) {
+            items = db.select(choiceBoxCustom.getName(), choiceBoxCustom.getSqlQuery());
+        }
+        items.add(0, "Vali");
+        choiceBoxCustom.setItems(FXCollections.observableArrayList(items));
+        choiceBoxCustom.getSelectionModel().select(0);
     }
 
     public void resetSelection(){
+        setSqlQuery();
+        setSetItemsWithDefaultItemAdded(this);
         this.selection = this.getSelectionModel();
         this.setOnAction(event -> {
-
-            System.out.println(selection.getSelectedItem());
-            if (previous != null && previous.selection != null && previous.selection.getSelectedIndex() > 0){
-
-                previous.selection.select(0);
+            setSqlQuery();
+            System.out.println(this.selection.getSelectedItem());
+            if (this.next != null /* && next.selection != null &&next.selection.getSelectedIndex() > 0*/){
+                this.next.setSqlQuery();
+                setSetItemsWithDefaultItemAdded(this.next);
+                //next.selection.select(0);
+                //next.setDisabled(true);
+            }
+            if (this.next == null){
+                setSetItemsWithDefaultItemAdded(this);
             }
         });
+        if(this.next != null) {
+            this.next.resetSelection();
+        }
     }
-
+/*
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -80,14 +101,14 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
         ChoiceBoxCustom that = (ChoiceBoxCustom) o;
 
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (nextName != null ? !nextName.equals(that.nextName) : that.nextName != null) return false;
+        if (next != null ? !next.equals(that.next) : that.next != null) return false;
         return sqlQuery != null ? sqlQuery.equals(that.sqlQuery) : that.sqlQuery == null;
     }
 
     @Override
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (nextName != null ? nextName.hashCode() : 0);
+        result = 31 * result + (next != null ? next.hashCode() : 0);
         result = 31 * result + (sqlQuery != null ? sqlQuery.hashCode() : 0);
         return result;
     }
@@ -97,9 +118,10 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
     public String toString() {
         return "ChoiceBoxCustom{" +
                 "name='" + name + '\'' +
-                ", previous=" + previous +
-                ", nextName=" + nextName +
+                ", previousSQLCondition=" + previousSQLCondition +
+                ", next=" + next +
                 ", sqlQuery='" + sqlQuery + '\'' +
                 '}';
     }
+    */
 }

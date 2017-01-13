@@ -1,3 +1,5 @@
+package com.allar.kodune;
+
 import java.sql.*;
 import java.util.ArrayList;
 
