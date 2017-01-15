@@ -5,6 +5,8 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.SelectionModel;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
 import java.util.ArrayList;
 
 /**
@@ -17,16 +19,17 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
     private String previousSQLCondition;
     private String sqlQuery;
     private String sqlQueryCondition;
-    private ObservableList<String> setItemsWithDefaultSet;
-    SelectionModel selection;
+    private SelectionModel selection;
 
-    public ChoiceBoxCustom(final String name, final ChoiceBoxCustom next, final String table){
+    public ChoiceBoxCustom(final String name, final ChoiceBoxCustom next, final String table, boolean disable){
         this.name = name;
         this.next = next;
         this.sqlTable = table;
+        this.setDisable(disable);
+        setSelection();
     }
 
-    public String getName() {
+    private String getName() {
         return name;
     }
 
@@ -34,62 +37,72 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
         return next;
     }
 
-    public String getSqlQuery() {
-        return sqlQuery;
+    private String getSqlQuery() {
+        return this.sqlQuery;
     }
 
-    public void setSqlQuery() {
-        this.sqlQuery = "SELECT DISTINCT " + name + " FROM " + this.sqlTable;
-        if (selection != null) {
-            //if (next != null) {
-                if (previousSQLCondition == null) {
-                    sqlQueryCondition = " WHERE " + name + "='" + selection.getSelectedItem() + "'";
-                } else {
-                    this.sqlQuery = this.sqlQuery + previousSQLCondition;
-                    sqlQueryCondition = previousSQLCondition + " AND " + name + "='" + selection.getSelectedItem() + "'";
-                }
-                //sqlQuery = sqlQuery + sqlQueryCondition;
-            //}
+    private void setSqlQuery() {
+        this.sqlQuery = "SELECT DISTINCT " + this.name + " FROM " + this.sqlTable;
+        if (this.selection != null) {
+            if (this.previousSQLCondition == null) {
+                this.sqlQueryCondition = " WHERE " + name + "='" + selection.getSelectedItem() + "'";
+            } else {
+                this.sqlQuery = this.sqlQuery + this.previousSQLCondition;
+                this.sqlQueryCondition = this.previousSQLCondition + " AND " + this.name + "='" + this.selection.getSelectedItem() + "'";
+            }
         }
-        setCurrentSQLQueryConditionForNext(sqlQueryCondition);
-    }
-
-    private void setCurrentSQLQueryConditionForNext(String sqlQueryCondition){
         if (next != null){
-            next.previousSQLCondition = sqlQueryCondition;
+            next.previousSQLCondition = this.sqlQueryCondition;
         }
     }
 
-    public void setSetItemsWithDefaultItemAdded(ChoiceBoxCustom choiceBoxCustom) {
-        Database db = new Database();
+    private void setSetItemsWithDefaultItemAdded(ChoiceBoxCustom choiceBoxCustom) {
         ArrayList<String> items = new ArrayList<>();
-        if (previousSQLCondition == null || choiceBoxCustom.getSelectionModel().getSelectedIndex() > 0) {
+        if (!choiceBoxCustom.isDisabled()) {
+            Database db = new Database();
             items = db.select(choiceBoxCustom.getName(), choiceBoxCustom.getSqlQuery());
         }
         items.add(0, "Vali");
-        choiceBoxCustom.setItems(FXCollections.observableArrayList(items));
-        choiceBoxCustom.getSelectionModel().select(0);
+            choiceBoxCustom.setItems(FXCollections.observableArrayList(items));
+        if(choiceBoxCustom.getSelectionModel().getSelectedIndex() != 0) {
+            choiceBoxCustom.getSelectionModel().select(0);
+        }
     }
 
-    public void resetSelection(){
+    private void setSelection(){
         setSqlQuery();
         setSetItemsWithDefaultItemAdded(this);
         this.selection = this.getSelectionModel();
-        this.setOnAction(event -> {
-            setSqlQuery();
-            System.out.println(this.selection.getSelectedItem());
-            if (this.next != null /* && next.selection != null &&next.selection.getSelectedIndex() > 0*/){
-                this.next.setSqlQuery();
-                setSetItemsWithDefaultItemAdded(this.next);
-                //next.selection.select(0);
-                //next.setDisabled(true);
-            }
-            if (this.next == null){
-                setSetItemsWithDefaultItemAdded(this);
+        this.setOnAction( event -> {
+            if(!this.isDisabled()) {
+                System.out.println("setOnAction: " + this.getName());
+                setSqlQuery();
+                if (this.next != null) {
+
+                    if (this.selection.getSelectedIndex() <= 0) {
+                        this.next.setDisable(true);
+                        setSetItemsWithDefaultItemAdded(this.next);
+                        //this.next.selection.clearSelection();
+                    } else {
+                        this.next.setDisable(false);
+                    }
+                    if (!this.next.isDisabled()) {
+                        this.next.selection.clearSelection();
+                        setSetItemsWithDefaultItemAdded(this.next);
+                    }
+                    resetSelection(this.next);
+                }
             }
         });
-        if(this.next != null) {
-            this.next.resetSelection();
+    }
+    private void focusGained(FocusEvent e){
+        System.out.println(this.getName() + e);
+    }
+    private void resetSelection(ChoiceBoxCustom choiceBoxCustom){
+        if (choiceBoxCustom.next != null) {
+            choiceBoxCustom.next.setDisable(true);
+            setSetItemsWithDefaultItemAdded(choiceBoxCustom.next);
+            resetSelection(choiceBoxCustom.next);
         }
     }
 /*

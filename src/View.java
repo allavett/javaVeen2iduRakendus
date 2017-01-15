@@ -3,7 +3,6 @@
  */
 
 import com.allar.kodune.ChoiceBoxCustom;
-import com.allar.kodune.Database;
 import javafx.application.Application;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -30,6 +29,8 @@ public class View extends Application {
     private ChoiceBoxCustom testChoiceBox;
     private ChoiceBoxCustom testChoiceBox2;
     private ChoiceBoxCustom testChoiceBox3;
+    private ChoiceBoxCustom testChoiceBox4;
+    private ChoiceBoxCustom testChoiceBox5;
     public static void main(String[] args) {
         launch(args);
     }
@@ -68,16 +69,17 @@ public class View extends Application {
         Label lblCounterNew = new Label("Sisesta uus veenäit:");
 // ChoiceBoxes
         initTestChoiceBoxes();
-
+/*
         initSelectCounty();
         initSelectCity();
         initSelectStreet();
         initSelectHouseNr();
         initSelectApartment();
         resetChoiceBoxValueAndState(ChoiceBoxCases.init);
+        */
 // Layouts
         VBox layoutMain = new VBox();
-        layoutMain.getChildren().addAll(testChoiceBox, testChoiceBox2, testChoiceBox3,btnRegister,btnLogin);
+        layoutMain.getChildren().addAll(testChoiceBox, testChoiceBox2, testChoiceBox3, testChoiceBox4, testChoiceBox5,btnRegister,btnLogin);
         VBox layoutRegister = new VBox();
         VBox layoutLogin = new VBox();
         VBox layoutCounterNew = new VBox();
@@ -111,7 +113,7 @@ public class View extends Application {
                     selectedAddressId);
             String error = Register.error.getError();
             if (error.isEmpty()){
-                resetChoiceBoxValueAndState(ChoiceBoxCases.init);
+                //resetChoiceBoxValueAndState(ChoiceBoxCases.init);
                 fieldUsername.clear();
                 fieldPassword.clear();
                 fieldPasswordConfirm.clear();
@@ -188,23 +190,26 @@ public class View extends Application {
     }
 // Initialize ChoiceBoxes
     private void  initTestChoiceBoxes(){
+        testChoiceBox5 = new ChoiceBoxCustom("apartment",null,"addresses",true);
+        testChoiceBox4 = new ChoiceBoxCustom("house_nr", testChoiceBox5,"addresses", true);
+        testChoiceBox3 = new ChoiceBoxCustom("street",testChoiceBox4, "addresses", true);
+        testChoiceBox2 = new ChoiceBoxCustom("city", testChoiceBox3, "addresses", true);
+        testChoiceBox = new ChoiceBoxCustom("county", testChoiceBox2, "addresses", false);
 
-        testChoiceBox3 = new ChoiceBoxCustom("street",null, "addresses");
-        testChoiceBox2 = new ChoiceBoxCustom("city", testChoiceBox3, "addresses");
-        testChoiceBox = new ChoiceBoxCustom("county", testChoiceBox2, "addresses");
         //testChoiceBox.setSqlQuery();
         //testChoiceBox2.setSqlQuery();
 
         //Database db = new Database();
         //testChoiceBox.setSetItemsWithDefaultItemAdded(db.select(testChoiceBox.getName(), testChoiceBox.getSqlQuery()), "Vali..");
         //testChoiceBox2.setSetItemsWithDefaultItemAdded(db.select(testChoiceBox2.getName(), testChoiceBox2.getSqlQuery()), "Vali..");
-        testChoiceBox.resetSelection();
+
         //testChoiceBox2.setSetItemsWithDefaultItemAdded(db.select(testChoiceBox2.getName(), testChoiceBox2.getSqlQuery()), "Vali..");
-        //testChoiceBox2.resetSelection();
+        //testChoiceBox2.setSelection();
 
 
 
     }
+    /*
     private void initSelectCounty(){
         selectCounty = new ChoiceBox<>(Register.getData("county", "addresses"));
         setChoicesOnAction(selectCounty, ChoiceBoxCases.county);
@@ -307,5 +312,5 @@ public class View extends Application {
     private void resetToDefaultValue(ChoiceBox<String> choiceBox) {
         choiceBox.getSelectionModel().select(0);
     }
-
+*/
 }
