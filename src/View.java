@@ -12,25 +12,13 @@ import javafx.scene.layout.VBox;
 
 public class View extends Application {
 
-    private static enum ChoiceBoxCases {init, county, city, street, houseNr, apartment}
-    private ChoiceBox<String> selectCounty;
-    private ChoiceBox<String> selectCity;
-    private ChoiceBox<String> selectStreet;
-    private ChoiceBox<String> selectHouseNr;
-    private ChoiceBox<String> selectApartment;
-
-    private String selectedCountySQL;
-    private String selectedCitySQL;
-    private String selectedStreetSQL;
-    private String selectedHouseNrSQL;
-    private String selectedApartmentSQL;
-    private Integer selectedAddressId;
     private String loggedInUser;
-    private ChoiceBoxCustom testChoiceBox;
-    private ChoiceBoxCustom testChoiceBox2;
-    private ChoiceBoxCustom testChoiceBox3;
-    private ChoiceBoxCustom testChoiceBox4;
-    private ChoiceBoxCustom testChoiceBox5;
+    private ChoiceBoxCustom selectCounty;
+    private ChoiceBoxCustom selectCity;
+    private ChoiceBoxCustom selectStreet;
+    private ChoiceBoxCustom selectHouseNr;
+    private ChoiceBoxCustom selectApartment;
+    private int selectedAddressId;
     public static void main(String[] args) {
         launch(args);
     }
@@ -65,21 +53,13 @@ public class View extends Application {
         Label lblPassword = new Label("Parool:");
         Label lblPasswordConfirm = new Label("Parooli kinnitus:");
         Label lblError = new Label();
-        Label lblUser = new Label();
+        Label lblLoggedInUser = new Label();
         Label lblCounterNew = new Label("Sisesta uus veenäit:");
 // ChoiceBoxes
         initTestChoiceBoxes();
-/*
-        initSelectCounty();
-        initSelectCity();
-        initSelectStreet();
-        initSelectHouseNr();
-        initSelectApartment();
-        resetChoiceBoxValueAndState(ChoiceBoxCases.init);
-        */
 // Layouts
         VBox layoutMain = new VBox();
-        layoutMain.getChildren().addAll(testChoiceBox, testChoiceBox2, testChoiceBox3, testChoiceBox4, testChoiceBox5,btnRegister,btnLogin);
+        layoutMain.getChildren().addAll(btnRegister,btnLogin);
         VBox layoutRegister = new VBox();
         VBox layoutLogin = new VBox();
         VBox layoutCounterNew = new VBox();
@@ -109,6 +89,7 @@ public class View extends Application {
         });
         btnRegisterSubmit.setOnAction(event -> {
             System.out.println("Saada");
+            selectedAddressId = Register.getAddressId(selectApartment);
             Register.checkData(fieldUsername.getText(), fieldPassword.getText(), fieldPasswordConfirm.getText(),
                     selectedAddressId);
             String error = Register.error.getError();
@@ -129,9 +110,9 @@ public class View extends Application {
                 loggedInUser = Login.checkUserData(fieldUsername.getText(), fieldPassword.getText());
                 String error = Login.error.getError();
                 if (error.isEmpty()){
-                    lblUser.setText("Tere, " + loggedInUser + " !");
+                    lblLoggedInUser.setText("Tere, " + loggedInUser + " !");
                     layoutMain.getChildren().clear();
-                    layoutMain.getChildren().addAll(lblUser,btnLogout,btnCounterNew,btnCounterHistory);
+                    layoutMain.getChildren().addAll(lblLoggedInUser,btnLogout,btnCounterNew,btnCounterHistory);
                     primaryStage.setScene(sceneMain);
                 }
                 lblError.setText(error);
@@ -146,15 +127,15 @@ public class View extends Application {
         });
         btnLogout.setOnAction(event -> {
             loggedInUser = "";
-            lblUser.setText(loggedInUser);
+            lblLoggedInUser.setText(loggedInUser);
             layoutMain.getChildren().clear();
             layoutMain.getChildren().addAll(btnRegister,btnLogin);
             System.out.println("Logiti välja!");
             primaryStage.setScene(sceneMain);
         });
         btnBack.setOnAction(event -> {
-            System.out.println("TESTTTTT:" +lblUser.getText()+".");
-            if (lblUser.getText().equals("")){
+            System.out.println("TESTTTTT:" +lblLoggedInUser.getText()+".");
+            if (lblLoggedInUser.getText().equals("")){
 
                 lblError.setText("");
                 layoutMain.getChildren().clear();
@@ -164,7 +145,7 @@ public class View extends Application {
             }else{
                 System.out.println("Tagasi");
                 layoutMain.getChildren().clear();
-                layoutMain.getChildren().addAll(lblUser,btnLogout,btnCounterNew,btnCounterHistory);
+                layoutMain.getChildren().addAll(lblLoggedInUser,btnLogout,btnCounterNew,btnCounterHistory);
                 primaryStage.setScene(sceneMain);
             }
 
@@ -182,7 +163,7 @@ public class View extends Application {
 
             } else {
                 layoutCounterNew.getChildren().clear();
-                layoutCounterNew.getChildren().addAll(lblUser,btnBack, lblCounterNew, fieldCounterNew, btnCounterNew, lblError);
+                layoutCounterNew.getChildren().addAll(lblLoggedInUser,btnBack, lblCounterNew, fieldCounterNew, btnCounterNew, lblError);
                 System.out.println("Saada uus näit!");
                 primaryStage.setScene(sceneCounterNew);
             }
@@ -190,127 +171,10 @@ public class View extends Application {
     }
 // Initialize ChoiceBoxes
     private void  initTestChoiceBoxes(){
-        testChoiceBox5 = new ChoiceBoxCustom("apartment",null,"addresses",true);
-        testChoiceBox4 = new ChoiceBoxCustom("house_nr", testChoiceBox5,"addresses", true);
-        testChoiceBox3 = new ChoiceBoxCustom("street",testChoiceBox4, "addresses", true);
-        testChoiceBox2 = new ChoiceBoxCustom("city", testChoiceBox3, "addresses", true);
-        testChoiceBox = new ChoiceBoxCustom("county", testChoiceBox2, "addresses", false);
-
-        //testChoiceBox.setSqlQuery();
-        //testChoiceBox2.setSqlQuery();
-
-        //Database db = new Database();
-        //testChoiceBox.setSetItemsWithDefaultItemAdded(db.select(testChoiceBox.getName(), testChoiceBox.getSqlQuery()), "Vali..");
-        //testChoiceBox2.setSetItemsWithDefaultItemAdded(db.select(testChoiceBox2.getName(), testChoiceBox2.getSqlQuery()), "Vali..");
-
-        //testChoiceBox2.setSetItemsWithDefaultItemAdded(db.select(testChoiceBox2.getName(), testChoiceBox2.getSqlQuery()), "Vali..");
-        //testChoiceBox2.setSelection();
-
-
-
+        selectApartment = new ChoiceBoxCustom("apartment",null,"addresses",true);
+        selectHouseNr = new ChoiceBoxCustom("house_nr", selectApartment,"addresses", true);
+        selectStreet = new ChoiceBoxCustom("street",selectHouseNr, "addresses", true);
+        selectCity = new ChoiceBoxCustom("city", selectStreet, "addresses", true);
+        selectCounty = new ChoiceBoxCustom("county", selectCity, "addresses", false);
     }
-    /*
-    private void initSelectCounty(){
-        selectCounty = new ChoiceBox<>(Register.getData("county", "addresses"));
-        setChoicesOnAction(selectCounty, ChoiceBoxCases.county);
-    }
-    private void initSelectCity(){
-        selectCity = new ChoiceBox<>(Register.getData("", ""));
-        setState(selectCity,true);
-        setChoicesOnAction(selectCity,ChoiceBoxCases.city);
-    }
-    private void initSelectStreet(){
-        selectStreet = new ChoiceBox<>(Register.getData("", ""));
-        setState(selectStreet,true);
-        setChoicesOnAction(selectStreet, ChoiceBoxCases.street);
-     }
-    private void initSelectHouseNr(){
-        selectHouseNr = new ChoiceBox<>(Register.getData("", ""));
-        setState(selectHouseNr,true);
-        setChoicesOnAction(selectHouseNr, ChoiceBoxCases.houseNr);
-    }
-    private void initSelectApartment(){
-        selectApartment = new ChoiceBox<>(Register.getData("", ""));
-        resetToDefaultValue(selectApartment);
-        setChoicesOnAction(selectApartment,ChoiceBoxCases.apartment);
-    }
-// Actions on ChoiceBox selection
-    private void setChoicesOnAction(ChoiceBox<String> choiceBox, ChoiceBoxCases choiceBoxCase) {
-        choiceBox.setOnAction(event -> {
-            if (choiceBox.isFocused()) {
-                SelectionModel selection = choiceBox.getSelectionModel();
-                resetChoiceBoxValueAndState(choiceBoxCase);
-                if (selection.getSelectedIndex() != 0){
-                    switch (choiceBoxCase){
-                        case county:
-                            selectedCountySQL = "addresses WHERE county = '" + selection.getSelectedItem() + "' ";
-                            selectCity.setItems(Register.getData("city", selectedCountySQL));
-                            setState(selectCity,false);
-                            resetToDefaultValue(selectCity);
-                            break;
-                        case city:
-                            selectedCitySQL = selectedCountySQL + " AND city = '" + selection.getSelectedItem() + "'";
-                            selectStreet.setItems(Register.getData( "street", selectedCitySQL));
-                            setState(selectStreet,false);
-                            resetToDefaultValue(selectStreet);
-                            break;
-                        case street:
-                            selectedStreetSQL = selectedCitySQL + " AND street = '" + selection.getSelectedItem() + "'";
-                            selectHouseNr.setItems(Register.getData( "house_nr", selectedStreetSQL));
-                            setState(selectHouseNr,false);
-                            resetToDefaultValue(selectHouseNr);
-                            break;
-                        case houseNr:
-                            selectedHouseNrSQL = selectedStreetSQL + " AND house_nr = '" + selection.getSelectedItem() + "'";
-                            selectApartment.setItems(Register.getData( "apartment", selectedHouseNrSQL));
-                            setState(selectApartment,false);
-                            resetToDefaultValue(selectApartment);
-                            break;
-                        case apartment:
-                            selectedApartmentSQL = selectedHouseNrSQL + " AND apartment = '" + selection.getSelectedItem() + "'";
-                            selectedAddressId = Register.getId("address_id", selectedApartmentSQL);
-                            System.out.println("Vaade "+ selectedAddressId.toString());
-                            break;
-                        default:
-                            System.out.println("How did you get here?!");
-                    }
-                }
-            }
-        });
-    }
-// Reset ChoiceBoxes
-    private void resetChoiceBoxValueAndState(ChoiceBoxCases choiceBoxCase) {
-        switch (choiceBoxCase){
-            case init:
-                resetToDefaultValue(selectCounty);
-            case county:
-                resetToDefaultValue(selectCity);
-                setState(selectCity,true);
-            case city:
-                resetToDefaultValue(selectStreet);
-                setState(selectStreet, true);
-            case street:
-                resetToDefaultValue(selectHouseNr);
-                setState(selectHouseNr, true);
-            case houseNr:
-                resetToDefaultValue(selectApartment);
-                setState(selectApartment, true);
-                break;
-            default:
-                System.out.println("How did you get here?!");
-                break;
-        }
-        selectedAddressId = -1;
-        System.out.println("selected Adress Id " +selectedAddressId);
-        System.out.println(choiceBoxCase.toString());
-    }
-
-    private void setState(ChoiceBox<String> choiceBox, boolean state) {
-        choiceBox.setDisable(state);
-    }
-
-    private void resetToDefaultValue(ChoiceBox<String> choiceBox) {
-        choiceBox.getSelectionModel().select(0);
-    }
-*/
 }

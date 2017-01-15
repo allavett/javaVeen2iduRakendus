@@ -41,6 +41,7 @@ public class Database {
             System.out.println(e.getMessage());
         }
         disconnect();
+        System.out.println("Andmebaasi tulemus:" + result + ".");
         return result;
     }
     public ArrayList<String> select(String item, String query){

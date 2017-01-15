@@ -1,12 +1,8 @@
 package com.allar.kodune;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.SelectionModel;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
 import java.util.ArrayList;
 
 /**
@@ -18,6 +14,11 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
     private final String sqlTable;
     private String previousSQLCondition;
     private String sqlQuery;
+
+    public String getSqlQueryCondition() {
+        return sqlQueryCondition;
+    }
+
     private String sqlQueryCondition;
     private SelectionModel selection;
 
@@ -33,10 +34,6 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
         return name;
     }
 
-    public ChoiceBoxCustom getNext() {
-        return next;
-    }
-
     private String getSqlQuery() {
         return this.sqlQuery;
     }
@@ -50,9 +47,12 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
                 this.sqlQuery = this.sqlQuery + this.previousSQLCondition;
                 this.sqlQueryCondition = this.previousSQLCondition + " AND " + this.name + "='" + this.selection.getSelectedItem() + "'";
             }
+
         }
         if (next != null){
             next.previousSQLCondition = this.sqlQueryCondition;
+        } else {
+            System.out.println(this.sqlQuery);
         }
     }
 
@@ -82,7 +82,6 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
                     if (this.selection.getSelectedIndex() <= 0) {
                         this.next.setDisable(true);
                         setSetItemsWithDefaultItemAdded(this.next);
-                        //this.next.selection.clearSelection();
                     } else {
                         this.next.setDisable(false);
                     }
@@ -95,9 +94,7 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
             }
         });
     }
-    private void focusGained(FocusEvent e){
-        System.out.println(this.getName() + e);
-    }
+
     private void resetSelection(ChoiceBoxCustom choiceBoxCustom){
         if (choiceBoxCustom.next != null) {
             choiceBoxCustom.next.setDisable(true);

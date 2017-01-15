@@ -1,3 +1,4 @@
+import com.allar.kodune.ChoiceBoxCustom;
 import com.allar.kodune.Database;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,7 +11,19 @@ import java.util.ArrayList;
 public class Register {
 
 // Check registration data
+
     public static Error error = new Error();
+
+    public static int getAddressId(ChoiceBoxCustom apartment){
+        int result = -1;
+        if (apartment != null) {
+            String sqlCondition = "addresses " + apartment.getSqlQueryCondition();
+            Database db = new Database();
+            result = Integer.parseInt(db.selectOLD("address_id", sqlCondition));
+        }
+        System.out.println(result);
+        return result;
+    }
     public static void checkData(String username, String password, String passwordConfirm, Integer address_id){
         error.setError("");
         if (address_id < 1){
