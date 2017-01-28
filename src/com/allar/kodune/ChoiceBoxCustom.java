@@ -74,8 +74,9 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
         setSetItemsWithDefaultItemAdded(this);
         this.selection = this.getSelectionModel();
         this.setOnAction( event -> {
+            System.out.println("setOnAction" + this.getName());
             if(!this.isDisabled()) {
-                System.out.println("setOnAction: " + this.getName());
+                System.out.println("Not disabled: " + this.getName());
                 setSqlQuery();
                 if (this.next != null) {
 
@@ -98,40 +99,10 @@ public class ChoiceBoxCustom extends ChoiceBox<String>{
     private void resetSelection(ChoiceBoxCustom choiceBoxCustom){
         if (choiceBoxCustom.next != null) {
             choiceBoxCustom.next.setDisable(true);
-            setSetItemsWithDefaultItemAdded(choiceBoxCustom.next);
-            resetSelection(choiceBoxCustom.next);
+            if (choiceBoxCustom.next.getSelectionModel().getSelectedIndex() > 0) {
+                setSetItemsWithDefaultItemAdded(choiceBoxCustom.next);
+                resetSelection(choiceBoxCustom.next);
+            }
         }
     }
-/*
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ChoiceBoxCustom that = (ChoiceBoxCustom) o;
-
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (next != null ? !next.equals(that.next) : that.next != null) return false;
-        return sqlQuery != null ? sqlQuery.equals(that.sqlQuery) : that.sqlQuery == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (next != null ? next.hashCode() : 0);
-        result = 31 * result + (sqlQuery != null ? sqlQuery.hashCode() : 0);
-        return result;
-    }
-
-    // TODO!!! Not sure if I need this????
-    @Override
-    public String toString() {
-        return "ChoiceBoxCustom{" +
-                "name='" + name + '\'' +
-                ", previousSQLCondition=" + previousSQLCondition +
-                ", next=" + next +
-                ", sqlQuery='" + sqlQuery + '\'' +
-                '}';
-    }
-    */
 }

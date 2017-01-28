@@ -16,7 +16,7 @@ public class Register {
 
     public static int getAddressId(ChoiceBoxCustom apartment){
         int result = -1;
-        if (apartment != null) {
+        if (apartment != null && apartment.getSelectionModel().getSelectedIndex() > 0 && apartment.getSqlQueryCondition() != null && !apartment.getSqlQueryCondition().contains("null")) {
             String sqlCondition = "addresses " + apartment.getSqlQueryCondition();
             Database db = new Database();
             result = Integer.parseInt(db.selectOLD("address_id", sqlCondition));
